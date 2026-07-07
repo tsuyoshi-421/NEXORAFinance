@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI, sans-serif;
+}
+
+body{
+    background:#091d42;
+    color:#fff;
+}
+
+.container{
+    display:flex;
+    height:100vh;
+}
+
+/* Sidebar */
+
+.sidebar{
+    width:230px;
+    background:#0d2147;
+    padding:25px;
+    border-right:1px solid rgba(255,255,255,.08);
+}
+
+.logo h2{
+    color:#fff;
+    letter-spacing:2px;
+}
+
+.logo small{
+    color:#6da9ff;
+    font-size:11px;
+}
+
+.menu{
+    list-style:none;
+    margin-top:35px;
+}
+
+.menu li{
+    padding:12px 0;
+    color:#9fb4d7;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.menu li i{
+    width:25px;
+}
+
+.menu li.active{
+    color:#fff;
+    font-weight:600;
+}
+
+.menu hr{
+    margin:18px 0;
+    border:.5px solid rgba(255,255,255,.08);
+}
+
+/* Main */
+
+.main{
+    flex:1;
+    padding:20px;
+}
+
+/* Grid */
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    grid-template-rows:100px 270px 120px;
+
+    gap:15px;
+
+}
+
+/* Cards */
+
+.card{
+
+    background:#132b57;
+
+    border-radius:10px;
+
+    padding:15px;
+
+    box-shadow:0 0 0 1px rgba(255,255,255,.03);
+
+}
+
+/* Cashflow */
+
+.cashflow h4{
+
+    font-size:14px;
+
+    color:#c9d8ff;
+
+}
+
+.cashflow h2{
+
+    margin-top:8px;
+
+    font-size:30px;
+
+}
+
+.bars{
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:8px;
+
+    height:90px;
+
+    margin-top:15px;
+
+}
+
+.bars span{
+
+    width:16px;
+
+    background:#4ea1ff;
+
+    border-radius:3px 3px 0 0;
+
+}
+
+.bars span:nth-child(1){height:40px;}
+.bars span:nth-child(2){height:70px;}
+.bars span:nth-child(3){height:85px;}
+.bars span:nth-child(4){height:55px;}
+.bars span:nth-child(5){height:73px;}
+.bars span:nth-child(6){height:48px;}
+.bars span:nth-child(7){height:79px;}
+
+.sales{
+
+    grid-column:1/2;
+
+}
+
+.large{
+
+    height:270px;
+
+}
+
+.highlight{
+
+    border:3px solid #ff00d4;
+
+}
+
+.wide{
+
+    grid-column:1/3;
+
+}
+
+.card:hover{
+
+    transform:translateY(-3px);
+
+    transition:.25s;
+
+}
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXORA ERP Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>NEXORA</h2>
+            <small>Enterprise Resource Planning</small>
+        </div>
+
+        <ul class="menu">
+            <li class="active"><i class="fa-solid fa-table-columns"></i> Dashboard</li>
+            <li><i class="fa-solid fa-chart-line"></i> Transactions</li>
+            <li><i class="fa-solid fa-wallet"></i> Expenses</li>
+            <li><i class="fa-solid fa-cart-shopping"></i> Sales</li>
+            <li><i class="fa-solid fa-money-bill-trend-up"></i> Cash Flow</li>
+            <li><i class="fa-solid fa-diagram-project"></i> Projects</li>
+            <li><i class="fa-solid fa-users"></i> Payroll</li>
+            <li><i class="fa-solid fa-file-lines"></i> Reports</li>
+            <li><i class="fa-solid fa-file-invoice-dollar"></i> Taxes</li>
+
+            <hr>
+
+            <li>Apps</li>
+            <li>Live Bookkeeping</li>
+
+            <hr>
+
+            <li>Settings</li>
+            <li>Help</li>
+
+        </ul>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+        <div class="dashboard">
+
+            <div class="card cashflow">
+                <h4>CASH FLOW</h4>
+                <h2>₱18,291</h2>
+
+                <div class="bars">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="card"></div>
+            <div class="card"></div>
+            <div class="card"></div>
+
+            <div class="card sales">
+                <h3>SALES</h3>
+                <h2>₱18,291</h2>
+            </div>
+
+            <div class="card large highlight"></div>
+
+            <div class="card large"></div>
+
+            <div class="card wide"></div>
+
+            <div class="card"></div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>
