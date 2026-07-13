@@ -297,7 +297,7 @@
 
         <!-- Top Navigation -->
         <header class="header">
-            <a href="signIn.html" class="nexora-logo" id="headerLogoBtn">
+            <a href="{{ route('signin') }}" class="nexora-logo" id="headerLogoBtn">
                 <img src="{{asset('images/Banner Transparent.png')}}" alt="Nexora Logo">
             </a>
            
