@@ -22,7 +22,6 @@
 
 <div class="main-wrapper max-w-[1400px] mx-auto space-y-5">
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-
     <div class="bg-navy-800 rounded-xl p-5 flex flex-col gap-2">
       <div class="flex items-center justify-between">
         <h3 class="text-muted text-sm font-medium">Total Invoices</h3>
