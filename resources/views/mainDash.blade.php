@@ -393,12 +393,12 @@ function changePage(element, page) {
     <!-- Sidebar -->
     <aside class="sidebar">
         <ul class="menu">
-            <li id="DashboardBtn" class="active" onclick="changePage(this, '{{ route('Dashboard') }}')">@svg('gmdi-dashboard', 'dash-icon')<span>Dashboard</span></li>
-            <li  onclick="changePage(this, '{{ route('invoiceDash') }}')">@svg('mdi-chart-line-stacked', 'dash-icon')<span>Invoice</span></li>
-            <li  onclick="changePage(this, '{{ route('expensesDash') }}')">@svg('feathericon-credit-card', 'dash-icon')<span>Expenses</span></li>
-            <li  onclick="changePage(this, '{{ route('salesDash') }}')">@svg('fluentui-cart-16-o', 'dash-icon')<span>Sales</span></li>
-            <li  onclick="changePage(this, '{{ route('cashflowDash') }}')">@svg('pepicon-peso-circle', 'dash-icon')<span>Cash Flow</span></li>
-            <li  onclick="changePage(this, '{{ route('accountsDash') }}')">@svg('untitledui-scales-02', 'dash-icon')<span>Accounts</span></li>
+            <li id="dashboardBtn" class="active" onclick="changePage(this, '{{ route('dashboard') }}')">@svg('gmdi-dashboard', 'dash-icon')<span>Dashboard</span></li>
+            <li  onclick="changePage(this, '{{ route('invoicedash') }}')">@svg('mdi-chart-line-stacked', 'dash-icon')<span>Invoice</span></li>
+            <li  onclick="changePage(this, '{{ route('expensesdash') }}')">@svg('feathericon-credit-card', 'dash-icon')<span>Expenses</span></li>
+            <li  onclick="changePage(this, '{{ route('salesdash') }}')">@svg('fluentui-cart-16-o', 'dash-icon')<span>Sales</span></li>
+            <li  onclick="changePage(this, '{{ route('cashflowdash') }}')">@svg('pepicon-peso-circle', 'dash-icon')<span>Cash Flow</span></li>
+            <li  onclick="changePage(this, '{{ route('accountsdash') }}')">@svg('untitledui-scales-02', 'dash-icon')<span>Accounts</span></li>
         </ul>
     </aside>
 
@@ -409,8 +409,7 @@ function changePage(element, page) {
     <iframe
         id="contentFrame"
         name="contentFrame"
-        
-        src="{{ route('Dashboard') }}" > 
+        src="{{ route('dashboard') }}" > 
     </iframe>
  
 
