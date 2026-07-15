@@ -6,7 +6,6 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
 </script>
 <head>
   <meta charset="UTF-8">
-  <title>Invoice Dashboard</title>
  <style>
 .main-wrapper {
     opacity: 0;

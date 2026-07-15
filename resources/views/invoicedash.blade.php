@@ -20,6 +20,8 @@
 </head>
 <body class="bg-navy-900 text-white font-sans p-5">
 
+
+
 <div class="main-wrapper max-w-[1400px] mx-auto space-y-5">
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
     <div class="bg-navy-800 rounded-xl p-5 flex flex-col gap-2">
@@ -187,28 +189,27 @@
   </div>
 
 </div>
-
+<div id="invoiceTableBody"></div>
 <script>
+   const rawInvoices = @json($invoices);
 
-let invoices = (() => {
+const clients = [
+    "ABC Corporation",
+    "Delta Traders",
+    "Sunrise Logistics",
+    "Metro Builders",
+    "Pacific Foods"
+];
 
-  const clients = ["ABC Corporation", "Delta Traders", "Sunrise Logistics", "Metro Builders", "Pacific Foods"];
-  const statuses = ["Paid", "Pending", "Overdue", "Draft"];
-  const list = [];
-  for (let i = 0; i < 24; i++) {
-    list.push({
-      number: `INV-${2077 + i}`,
-      client: clients[i % clients.length],
-      issue: "2025-05-21",
-      due: "2026-07-01",
-      amount: 900000,
-      status: statuses[i % statuses.length],
-    });
-  }
-  return list;
-})(); 
+let invoices = rawInvoices.map(inv => ({
+    number: `INV-${inv.invoice_id}`,
+    client: clients[inv.client_id - 1] ?? `Client ${inv.client_id}`,
+    issue: inv.issue_date,
+    due: inv.due_date,
+    amount: Number(inv.invoice_amount),
+    status: inv.status
+}));
 
-console.log("Invoices loaded:", invoices);
 
 let recentActivity = [
   { text: "Invoice #2891 has been paid", sub: "ABC Corporation", time: "2h ago", type: "paid" },
