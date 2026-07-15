@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\InvoiceController;
 
 Route::get('signin', function () {
     return view('signin');
@@ -16,9 +17,7 @@ Route::get('dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('invoicedash', function () {
-    return view('invoicedash');
-})->name('invoicedash');
+Route::get('invoicedash', [InvoiceController::class, 'index'])->name('invoicedash');
 
 Route::get('invoice', function () {
     return view('invoice');
@@ -39,4 +38,6 @@ Route::get('cashflowdash', function () {
 Route::get('accountsdash', function () {
     return view('accountsdash');
 })->name('accountsdash');
+
+
 
