@@ -345,7 +345,7 @@
     const headerLogoBtn = document.getElementById("headerLogoBtn");
     const loginBtn = document.getElementById("loginBtn");
 
-    if (loginBtn) loginBtn.addEventListener("click", (e) =>smoothExit(e, "{{ route('mainDash') }}"));  
+    if (loginBtn) loginBtn.addEventListener("click", (e) =>smoothExit(e, "{{ route('maindash') }}"));  
     if (signInBtn) signInBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signin')}}"));
     if (contactBtn) contactBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('contactus')}}"));
     if (headerLogoBtn) headerLogoBtn.addEventListener("click", (e) => smoothExit(e, "{{ route('signin')}}"));

@@ -206,7 +206,9 @@ let invoices = (() => {
     });
   }
   return list;
-})();
+})(); 
+
+console.log("Invoices loaded:", invoices);
 
 let recentActivity = [
   { text: "Invoice #2891 has been paid", sub: "ABC Corporation", time: "2h ago", type: "paid" },
@@ -272,7 +274,6 @@ function getFilteredInvoices() {
     return matchesQuery && matchesStatus;
   });
 }
-
 function renderInvoices() {
   const filtered = getFilteredInvoices();
   const perPage = parseInt(document.getElementById("perPage").value);
@@ -311,7 +312,7 @@ function renderInvoices() {
         </div>
       </td>`;
     tbody.appendChild(row);
-  });
+  }); 
 
   document.getElementById("pageInfo").textContent =
     `Showing ${filtered.length === 0 ? 0 : start+1} to ${Math.min(start+perPage, filtered.length)} of ${filtered.length} invoices`;

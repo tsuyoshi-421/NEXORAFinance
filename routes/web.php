@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\InvoiceController;
 
 Route::get('signin', function () {
     return view('signin');
@@ -8,35 +9,35 @@ Route::get('signin', function () {
 
 Route::view('/contactus','contactus')->name('contactus');
 
-Route::get('mainDash', function () {
-    return view('mainDash');
-})->name('mainDash');
+Route::get('maindash', function () {
+    return view('maindash');
+})->name('maindash');
 
-Route::get('Dashboard', function () {
-    return view('Dashboard');
-})->name('Dashboard');
+Route::get('dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
 
-Route::get('invoiceDash', function () {
-    return view('invoiceDash');
-})->name('invoiceDash');
+Route::get('invoicedash', [InvoiceController::class, 'index'])->name('invoicedash');
 
 Route::get('invoice', function () {
     return view('invoice');
 });
 
-Route::get('expensesDash', function () {
-    return view('expensesDash');
-})->name('expensesDash');
+Route::get('expensesdash', function () {
+    return view('expensesdash');
+})->name('expensesdash');
 
-Route::get('salesDash', function () {
-    return view('salesDash');
-})->name('salesDash');
+Route::get('salesdash', function () {
+    return view('salesdash');
+})->name('salesdash');
 
-Route::get('cashflowDash', function () {
-    return view('cashflowDash');
-})->name('cashflowDash');
+Route::get('cashflowdash', function () {
+    return view('cashflowdash');
+})->name('cashflowdash');
 
-Route::get('accountsDash', function () {
-    return view('accountsDash');
-})->name('accountsDash');
+Route::get('accountsdash', function () {
+    return view('accountsdash');
+})->name('accountsdash');
+
+
 
