@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ExpensesController;
 
 Route::get('signin', function () {
     return view('signin');
@@ -23,9 +24,7 @@ Route::get('invoice', function () {
     return view('invoice');
 });
 
-Route::get('expensesdash', function () {
-    return view('expensesdash');
-})->name('expensesdash');
+Route::get('expensesdash', [ExpensesController::class, 'index'])->name('expensesdash');
 
 Route::get('salesdash', function () {
     return view('salesdash');

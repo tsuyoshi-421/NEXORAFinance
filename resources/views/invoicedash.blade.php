@@ -31,8 +31,13 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>
         </div>
       </div>
-      <div class="text-2xl font-semibold" id="statTotal">₱0</div>
-      <small class="text-emerald-400">↑12% vs last month</small>
+      <div class="text-2xl font-semibold" id="statTotal">
+    ₱{{ number_format($currentTotal, 2) }}
+</div>
+
+<small class="{{ $color }}">
+    {{ $trend }}{{ number_format(abs($percent), 1) }}% vs last month
+</small>
     </div>
 
     <div class="bg-navy-800 rounded-xl p-5 flex flex-col gap-2">
@@ -42,8 +47,13 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
         </div>
       </div>
-      <div class="text-2xl font-semibold" id="statPaid">₱0</div>
-      <small class="text-emerald-400">↑12% vs last month</small>
+      <div class="text-2xl font-semibold" id="statPaid">
+    ₱{{ number_format($currentPaid, 2) }}
+</div>
+
+<small class="{{ $paidColor }}">
+    {{ $paidTrend }}{{ abs($paidPercent) }}% vs last month
+</small>
     </div>
 
     <div class="bg-navy-800 rounded-xl p-5 flex flex-col gap-2">
@@ -53,8 +63,13 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
         </div>
       </div>
-      <div class="text-2xl font-semibold" id="statPending">₱0</div>
-      <small class="text-emerald-400">↑12% vs last month</small>
+      <div class="text-2xl font-semibold" id="statPending">
+    ₱{{ number_format($currentPending, 2) }}
+</div>
+
+<small class="{{ $pendingColor }}">
+    {{ $pendingTrend }}{{ abs($pendingPercent) }}% vs last month
+</small>
     </div>
 
     <div class="bg-navy-800 rounded-xl p-5 flex flex-col gap-2">
@@ -64,8 +79,13 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
         </div>
       </div>
-      <div class="text-2xl font-semibold" id="statOverdue">₱0</div>
-      <small class="text-red-400">↑12% vs last month</small>
+      <div class="text-2xl font-semibold" id="statOverdue">
+    ₱{{ number_format($currentOverdue, 2) }}
+</div>
+
+<small class="{{ $overdueColor }}">
+    {{ $overdueTrend }}{{ abs($overduePercent) }}% vs last month
+</small>
     </div>
   </div>
 

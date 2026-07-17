@@ -76,7 +76,24 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
 
 const categories = [
   { key:"manufacturing", label:"Manufacturing", color:"#4ca6ff", capacity:11000, value:5500, prevValue:5360, trend:[3800,4200,4600,4900,5150,5500] },
-  { key:"procurement",   label:"Procurement",   color:"#2ecc71", capacity:8936,  value:4200, prevValue:4030, trend:[3200,3500,3300,3700,3900,4200] },
+  {
+    key:"procurement",
+    label:"Procurement",
+    color:"#2ecc71",
+
+    capacity: {{ $overallExpenses }},
+    value: {{ $procurementTotal }},
+    prevValue: {{ $procurementTotal }},
+
+    trend:[
+        {{ $procurementTotal }},
+        {{ $procurementTotal }},
+        {{ $procurementTotal }},
+        {{ $procurementTotal }},
+        {{ $procurementTotal }},
+        {{ $procurementTotal }}
+    ]
+},
   { key:"inventory",     label:"Inventory",     color:"#ef476f", capacity:5932,  value:2254, prevValue:2170, trend:[2600,2300,2700,2500,2100,2254] },
   { key:"orderFulfillment", label:"Order Fulfillment", color:"#f5a623", capacity:5625, value:1800, prevValue:1850, trend:[1400,1600,1500,1750,1600,1800] },
 ];
@@ -159,11 +176,18 @@ function renderCategoryCards(){
                style="background:${c.color}">${pct}%</div>
         </div>
       </div>
-      <div class="flex items-center justify-center gap-1.5 mt-4 text-sm ${up ? "text-emerald-400" : "text-red-400"}">
-        <span>${up ? "▲" : "▼"}</span>
-        <span>${Math.abs(diffK).toFixed(2)}</span>
-        <span class="text-xs">${up ? "+" : "-"}${Math.abs(pctChange).toFixed(2)}%</span>
-      </div>
+      <div class="text-center mt-4">
+    <p class="text-lg font-semibold">
+        ₱${Number(c.value).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}
+    </p>
+
+    <p class="text-xs text-muted">
+        ${pct}% of total expenses
+    </p>
+</div>
     </div>`;
   }).join("");
 }
