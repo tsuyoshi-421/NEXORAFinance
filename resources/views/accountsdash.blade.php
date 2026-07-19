@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title></title>
   <style>
+    .main-wrapper { opacity: 0; animation: showPage .8s ease forwards; }
+@keyframes showPage { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.dd-menu { animation: ddIn .12s ease forwards; }
+@keyframes ddIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+::-webkit-scrollbar { height: 8px; width: 8px; }
+::-webkit-scrollbar-thumb { background: #1c3a6e; border-radius: 4px; }
     .main-wrapper {
     opacity: 0;
     animation: showPage .8s ease forwards;
@@ -32,32 +38,13 @@ window.onload = () => {
   }, SPLASH_DURATION);
 };
 </script>
-<body>
   <div id="splash"></div>
     <div class="main-wrapper">
-  
   <div>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b52',700:'#17325f',600:'#1c3a6e'}, muted:'#9bb0d1' } } } }
 </script>
-<head>
-<meta charset="UTF-8">
-<title>Charts of Account</title>
-<style>
-.main-wrapper { opacity: 0; animation: showPage .8s ease forwards; }
-@keyframes showPage { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.dd-menu { animation: ddIn .12s ease forwards; }
-@keyframes ddIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-::-webkit-scrollbar { height: 8px; width: 8px; }
-::-webkit-scrollbar-thumb { background: #1c3a6e; border-radius: 4px; }
-</style>
-</head>
 <body class="bg-navy-900 text-white font-sans min-h-screen">
 
 <div class="h-[3px] w-full bg-gradient-to-r from-blue-500/60 via-blue-400/20 to-transparent"></div>
@@ -70,43 +57,15 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
       <h1 class="text-2xl font-semibold">Charts of Account</h1>
     </div>
     <div class="flex items-center gap-2">
-      <button onclick="toggleMenu('feedbackModal', true)" class="flex items-center gap-2 border border-navy-600 hover:bg-navy-800 transition rounded-lg px-3 py-2 text-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        Feedback
-      </button>
-      <button onclick="runReport()" class="border border-navy-600 hover:bg-navy-800 transition rounded-lg px-3 py-2 text-sm">Run report</button>
       <div class="flex rounded-lg overflow-hidden">
         <button onclick="openAccountModal()" class="bg-blue-500 hover:bg-blue-600 transition px-4 py-2 text-sm font-medium">New account</button>
-        <button onclick="event.stopPropagation(); toggleMenu('newAccountMenu')" class="dd-toggle bg-blue-500 hover:bg-blue-600 transition px-2 py-2 border-l border-blue-400/40">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-      </div>
-      <div class="relative">
-        <div id="newAccountMenu" class="dd-menu hidden absolute right-0 mt-1 bg-navy-800 border border-navy-600 rounded-lg shadow-lg text-sm w-44 overflow-hidden z-20">
-          <button onclick="openAccountModal()" class="w-full text-left px-3 py-2 hover:bg-navy-700">New account</button>
-          <button onclick="openAccountModal(null, true)" class="w-full text-left px-3 py-2 hover:bg-navy-700">New category</button>
-        </div>
       </div>
     </div>
   </div>
 
-  <div class="text-sm text-muted border-b border-navy-700 pb-2">
-    <span class="text-white border-b-2 border-blue-400 pb-2">All lists</span>
-  </div>
-
   <div class="flex flex-wrap items-center justify-between gap-3">
     <div class="flex flex-wrap items-center gap-2">
-      <div class="relative">
-        <button onclick="event.stopPropagation(); toggleMenu('batchMenu')" class="dd-toggle flex items-center gap-1 bg-navy-800 border border-navy-600 rounded-lg px-3 py-2 text-sm hover:bg-navy-700">
-          Batch actions
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div id="batchMenu" class="dd-menu hidden absolute left-0 mt-1 bg-navy-800 border border-navy-600 rounded-lg shadow-lg text-sm w-48 overflow-hidden z-20">
-          <button onclick="batchAction('inactive')" class="w-full text-left px-3 py-2 hover:bg-navy-700">Make inactive</button>
-          <button onclick="batchAction('report')" class="w-full text-left px-3 py-2 hover:bg-navy-700">Run report for selected</button>
-          <button onclick="batchAction('delete')" class="w-full text-left px-3 py-2 hover:bg-navy-700 text-red-400">Delete</button>
-        </div>
-      </div>
+      
 
       <div class="flex items-center gap-2 bg-navy-800 border border-navy-600 rounded-lg px-3 py-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -118,23 +77,10 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
         <option value="All">All</option>
       </select>
     </div>
-
     <div class="flex items-center gap-3">
-      <button onclick="toggleCompact()" title="Toggle row density" class="text-blue-400 hover:text-blue-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4z"/></svg>
-      </button>
-      <button onclick="window.print()" title="Print" class="text-blue-400 hover:text-blue-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
-      </button>
       <div class="relative">
-        <button onclick="event.stopPropagation(); toggleMenu('settingsMenu')" title="Settings" class="dd-toggle text-blue-400 hover:text-blue-300">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        </button>
         <div id="settingsMenu" class="dd-menu hidden absolute right-0 mt-1 bg-navy-800 border border-navy-600 rounded-lg shadow-lg text-sm w-56 p-3 space-y-3 z-20">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="chkBankBalance" checked onchange="state.showBankBalance=this.checked; renderTable();" class="w-4 h-4 accent-blue-500">
-            Show Bank Balance column
-          </label>
+          
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" id="chkIncludeInactive" onchange="state.includeInactive=this.checked; state.page=1; renderTable();" class="w-4 h-4 accent-blue-500">
             Include inactive accounts
@@ -171,14 +117,14 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
             <th class="py-3 pr-2 cursor-pointer" onclick="setSort('detail')">
               <span class="inline-flex items-center gap-1">DETAIL TYPE <span id="sort-detail"></span></span>
             </th>
+            
             <th class="py-3 pr-2 cursor-pointer" onclick="setSort('balance')">
-              <span class="inline-flex items-center gap-1">BALANCE <span id="sort-balance"></span></span>
-            </th>
-            <th id="th-bankBalance" class="py-3 pr-2 cursor-pointer" onclick="setSort('bankBalance')">
-              <span class="inline-flex items-center gap-1">BANK BALANCE <span id="sort-bankBalance"></span></span>
+              <span class="inline-flex items-center gap-1">BALANCE <span id="sort-balance"></span></th>
+              <th class="py-3 pr-2 cursor-pointer" onclick="setSort('detail')">
+              <span class="inline-flex items-center gap-1">DATE<span id="sort-detail"></span></span>
             </th>
             <th class="py-3 pr-4">ACTION</th>
-          </tr>
+          
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
@@ -188,94 +134,119 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
 
 </div>
 
-<div id="accountModalWrap" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-  <div class="bg-navy-800 rounded-xl p-6 w-full max-w-md space-y-4">
-    <div class="flex items-center justify-between">
-      <h3 id="accountModalTitle" class="text-lg font-semibold">New account</h3>
-      <button onclick="closeAccountModal()" class="text-muted hover:text-white">✕</button>
+<!-- Account Modal -->
+<div id="accountModalWrap"
+     class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
+
+    <div class="bg-navy-800 w-full max-w-lg rounded-xl shadow-2xl border border-navy-600">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-navy-600">
+            <h2 id="accountModalTitle" class="text-xl font-semibold">
+                New Account
+            </h2>
+
+            <button onclick="closeAccountModal()"
+                    class="text-gray-400 hover:text-white text-2xl leading-none">
+                &times;
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 space-y-4">
+
+            <div>
+                <label class="block text-sm text-muted mb-1">
+                    Account Name
+                </label>
+
+                <input
+                    id="fName"
+                    type="text"
+                    class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 outline-none"
+                    placeholder="Cash">
+            </div>
+
+            <div>
+                
+            </div>
+
+            <div>
+                <label class="block text-sm text-muted mb-1">
+                    Account Type
+                </label>
+
+                <select
+                    id="fType"
+                    class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 outline-none">
+
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm text-muted mb-1">
+                    Detail Type
+                </label>
+
+                <input
+                    id="fDetail"
+                    type="text"
+                    class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 outline-none"
+                    placeholder="Cash on Hand">
+            </div>
+
+            <div>
+                <label class="block text-sm text-muted mb-1">
+                    Opening Balance
+                </label>
+
+                <input
+                    id="fBalance"
+                    type="number"
+                    step="0.01"
+                    value="0"
+                    class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 outline-none">
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-navy-600">
+
+            <button
+                onclick="closeAccountModal()"
+                class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700">
+                Cancel
+            </button>
+
+            <button
+                onclick="saveAccount()"
+                class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700">
+                Save Account
+            </button>
+
+        </div>
+
     </div>
-    <div class="space-y-3 text-sm">
-      <div>
-        <label class="text-muted text-xs">Account name *</label>
-        <input id="fName" type="text" class="w-full mt-1 bg-navy-700 rounded-lg px-3 py-2 outline-none">
-      </div>
-      <div>
-        <label class="text-muted text-xs">Account number</label>
-        <input id="fNumber" type="text" class="w-full mt-1 bg-navy-700 rounded-lg px-3 py-2 outline-none">
-      </div>
-      <div>
-        <label class="text-muted text-xs">Account type *</label>
-        <select id="fType" class="w-full mt-1 bg-navy-700 rounded-lg px-3 py-2 outline-none"></select>
-      </div>
-      <div>
-        <label class="text-muted text-xs">Detail type</label>
-        <input id="fDetail" type="text" class="w-full mt-1 bg-navy-700 rounded-lg px-3 py-2 outline-none">
-      </div>
-      <div>
-        <label class="text-muted text-xs">Opening balance</label>
-        <input id="fBalance" type="number" step="0.01" class="w-full mt-1 bg-navy-700 rounded-lg px-3 py-2 outline-none">
-      </div>
-    </div>
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="closeAccountModal()" class="border border-navy-600 hover:bg-navy-700 transition rounded-lg px-4 py-2 text-sm">Cancel</button>
-      <button onclick="saveAccount()" class="bg-blue-500 hover:bg-blue-600 transition rounded-lg px-4 py-2 text-sm font-medium">Save</button>
-    </div>
-  </div>
-</div>
-<div id="feedbackModal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-  <div class="bg-navy-800 rounded-xl p-6 w-full max-w-md space-y-4">
-    <div class="flex items-center justify-between">
-      <h3 class="text-lg font-semibold">Send feedback</h3>
-      <button onclick="closeFeedbackModal()" class="text-muted hover:text-white">✕</button>
-    </div>
-    <textarea id="feedbackText" rows="4" placeholder="What's on your mind?" class="w-full bg-navy-700 rounded-lg px-3 py-2 text-sm outline-none"></textarea>
-    <div class="flex justify-end gap-2">
-      <button onclick="closeFeedbackModal()" class="border border-navy-600 hover:bg-navy-700 transition rounded-lg px-4 py-2 text-sm">Cancel</button>
-      <button onclick="submitFeedback()" class="bg-blue-500 hover:bg-blue-600 transition rounded-lg px-4 py-2 text-sm font-medium">Submit</button>
-    </div>
-  </div>
 </div>
 
 <script>
-let accounts = [
-  { name:"Cash", number:"1000", type:"Bank", detail:"Cash on Hand", balance:0, bankBalance:0, inactive:false },
-  { name:"Checking", number:"1010", type:"Bank", detail:"Checking", balance:52340.12, bankBalance:52340.12, inactive:false },
-  { name:"Savings", number:"1020", type:"Bank", detail:"Savings", balance:15000, bankBalance:15000, inactive:false },
-  { name:"Inventory Asset", number:"1200", type:"Other Current Assets", detail:"Inventory", balance:0, bankBalance:12288.45, inactive:false },
-  { name:"Payroll Refunds", number:"1210", type:"Other Current Assets", detail:"Other Current Assets", balance:0, bankBalance:0, inactive:false },
-  { name:"Prepaid Expenses", number:"1220", type:"Other Current Assets", detail:"Other Current Assets", balance:0, bankBalance:0, inactive:false },
-  { name:"Tax Holding Account", number:"1230", type:"Other Current Assets", detail:"Other Current Assets", balance:0, bankBalance:0, inactive:false },
-  { name:"Uncategorized Asset", number:"1240", type:"Other Current Assets", detail:"Other Current Assets", balance:0, bankBalance:0, inactive:false },
-  { name:"Undeposited Asset", number:"1250", type:"Other Current Assets", detail:"Undeposited Asset", balance:0, bankBalance:0, inactive:false },
-  { name:"Office Equipment", number:"1500", type:"Fixed Assets", detail:"Machinery & Equipment", balance:8500, bankBalance:8500, inactive:false },
-  { name:"Accumulated Depreciation", number:"1510", type:"Fixed Assets", detail:"Accumulated Depreciation", balance:-1200, bankBalance:-1200, inactive:false },
-  { name:"Corporate AMEX", number:"2000", type:"Credit Card", detail:"Credit Card", balance:0, bankBalance:0, inactive:false },
-  { name:"Business Visa", number:"2010", type:"Credit Card", detail:"Credit Card", balance:-450.32, bankBalance:-450.32, inactive:false },
-  { name:"Accounts Payable", number:"2100", type:"Accounts Payable", detail:"Accounts Payable", balance:3200, bankBalance:3200, inactive:false },
-  { name:"Payroll Liabilities", number:"2200", type:"Other Current Liabilities", detail:"Payroll Liabilities", balance:0, bankBalance:0, inactive:false },
-  { name:"Sales Tax Payable", number:"2210", type:"Other Current Liabilities", detail:"Other Current Liabilities", balance:640.5, bankBalance:640.5, inactive:false },
-  { name:"Loan Payable", number:"2500", type:"Long Term Liabilities", detail:"Notes Payable", balance:25000, bankBalance:25000, inactive:false },
-  { name:"Owner's Equity", number:"3000", type:"Equity", detail:"Owner's Equity", balance:0, bankBalance:0, inactive:false },
-  { name:"Retained Earnings", number:"3100", type:"Equity", detail:"Retained Earnings", balance:0, bankBalance:0, inactive:false },
-  { name:"Sales Income", number:"4000", type:"Income", detail:"Sales of Product Income", balance:0, bankBalance:0, inactive:false },
-  { name:"Service Income", number:"4010", type:"Income", detail:"Service/Fee Income", balance:0, bankBalance:0, inactive:false },
-  { name:"Cost of Goods Sold", number:"5000", type:"Cost of Goods Sold", detail:"Supplies & Materials", balance:0, bankBalance:0, inactive:false },
-  { name:"Advertising", number:"6000", type:"Expenses", detail:"Advertising/Promotional", balance:0, bankBalance:0, inactive:false },
-  { name:"Office Supplies", number:"6010", type:"Expenses", detail:"Office/General Administrative Expenses", balance:0, bankBalance:0, inactive:false },
-  { name:"Utilities", number:"6020", type:"Expenses", detail:"Utilities", balance:0, bankBalance:0, inactive:false },
-  { name:"Rent Expense", number:"6030", type:"Expenses", detail:"Rent or Lease of Buildings", balance:0, bankBalance:0, inactive:false },
-  { name:"Bank Charges", number:"7000", type:"Other Expense", detail:"Other Miscellaneous Expense", balance:0, bankBalance:0, inactive:false },
-];
 
-const ACCOUNT_TYPES = ["Bank","Other Current Assets","Fixed Assets","Accounts Payable","Credit Card","Other Current Liabilities","Long Term Liabilities","Equity","Income","Cost of Goods Sold","Expenses","Other Expense"];
+
+let accounts = @json($accounts);
+
+const ACCOUNT_TYPES = ["Asset","Liability","Equity"];
 
 let state = {
   search: "", filterType: "All", sortField: "name", sortDir: "asc",
   page: 1, pageSize: 10, selected: new Set(),
-  showBankBalance: true, includeInactive: false, compact: false,
+  includeInactive: false, compact: false,
 };
-let editingNumber = null;
+let editingAccountId = null;
 
+if (editingAccountId) {
+    const a = accounts.find(x => x.account_id == editingAccountId);
+}
 function fmtMoney(n){
   const neg = n < 0;
   const v = "₱" + Math.abs(n).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -285,7 +256,7 @@ function fmtMoney(n){
 function getFiltered(){
   return accounts.filter(a => {
     if (!state.includeInactive && a.inactive) return false;
-    if (state.filterType !== "All" && a.type !== state.filterType) return false;
+    if (state.filterType !== "All" && a.account_type !== state.filterType) return false;
     const q = state.search.toLowerCase();
     if (q && !(a.name.toLowerCase().includes(q) || a.number.toLowerCase().includes(q))) return false;
     return true;
@@ -309,14 +280,21 @@ function currentPageItems(){
   const start = (state.page - 1) * state.pageSize;
   return filtered.slice(start, start + state.pageSize);
 }
+function toggleMenu(id) {
+    const menu = document.getElementById(id);
 
-function toggleMenu(id, isModal){
-  if (isModal) { document.getElementById(id).classList.remove("hidden"); return; }
-  const el = document.getElementById(id);
-  const wasHidden = el.classList.contains("hidden");
-  closeAllMenus();
-  if (wasHidden) el.classList.remove("hidden");
+    // Check if this menu is already open
+    const isOpen = !menu.classList.contains("hidden");
+
+    // Close all menus first
+    closeAllMenus();
+
+    // If it wasn't open before, open it
+    if (!isOpen) {
+        menu.classList.remove("hidden");
+    }
 }
+
 function closeAllMenus(){
   document.querySelectorAll(".dd-menu").forEach(m => m.classList.add("hidden"));
 }
@@ -358,26 +336,34 @@ function renderTable(){
       <td class="${state.compact ? 'py-1.5' : 'py-3'} pr-2">${a.type}</td>
       <td class="${state.compact ? 'py-1.5' : 'py-3'} pr-2 text-muted">${a.detail || '—'}</td>
       <td class="${state.compact ? 'py-1.5' : 'py-3'} pr-2">${fmtMoney(a.balance)}</td>
-      <td class="td-bankBalance ${state.compact ? 'py-1.5' : 'py-3'} pr-2 ${state.showBankBalance ? '' : 'hidden'}">${fmtMoney(a.bankBalance)}</td>
-      <td class="${state.compact ? 'py-1.5' : 'py-3'} pr-4">
+
+<td class="${state.compact ? 'py-1.5' : 'py-3'} pr-2">
+    ${a.date}
+</td>
+
+<td class="${state.compact ? 'py-1.5' : 'py-3'} pr-4">
         <div class="relative inline-block">
           <button onclick="event.stopPropagation(); toggleMenu('rowMenu-${a.number}')" class="dd-toggle flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm">
-            ${a.type === "Bank" ? "View register" : "Run report"}
+            Actions
             <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div id="rowMenu-${a.number}" class="dd-menu hidden absolute right-0 mt-1 bg-navy-800 border border-navy-600 rounded-lg shadow-lg text-sm w-40 overflow-hidden z-20">
-            <button onclick="rowRunReport('${a.number}')" class="w-full text-left px-3 py-2 hover:bg-navy-700">Run report</button>
-            <button onclick="openAccountModal('${a.number}')" class="w-full text-left px-3 py-2 hover:bg-navy-700">Edit</button>
-            <button onclick="rowToggleInactive('${a.number}')" class="w-full text-left px-3 py-2 hover:bg-navy-700">${a.inactive ? 'Make active' : 'Make inactive'}</button>
-            <button onclick="rowDelete('${a.number}')" class="w-full text-left px-3 py-2 hover:bg-navy-700 text-red-400">Delete</button>
+            <button onclick="openAccountModal(${a.id})"
+                    class="w-full text-left px-3 py-2 hover:bg-navy-700">
+                Update Account
+            </button>
+
+            <button onclick="confirmDelete(${a.id}, '${a.name}')"
+                class="w-full text-left px-3 py-2 hover:bg-navy-700 text-red-400">
+                Delete Account
+            </button>
           </div>
         </div>
       </td>
     </tr>`).join("");
 
   document.getElementById("emptyState").classList.toggle("hidden", total !== 0);
-  document.getElementById("th-bankBalance").classList.toggle("hidden", !state.showBankBalance);
-  document.querySelectorAll(".td-bankBalance").forEach(td => td.classList.toggle("hidden", !state.showBankBalance));
+
 
   document.getElementById("pageInfo").textContent = total === 0 ? "0 - 0" : `${start + 1} - ${Math.min(start + state.pageSize, total)} of ${total}`;
   document.getElementById("prevBtn").disabled = state.page <= 1;
@@ -387,7 +373,7 @@ function renderTable(){
   const allChecked = pageIds.length > 0 && pageIds.every(id => state.selected.has(id));
   document.getElementById("selectAllChk").checked = allChecked;
 
-  ["name","number","type","detail","balance","bankBalance"].forEach(f => {
+  ["name","number","type","detail","balance"].forEach(f => {
     const el = document.getElementById("sort-" + f);
     if (el) el.innerHTML = sortIndicator(f);
   });
@@ -417,126 +403,181 @@ function toggleSelectAllPage(checked){
 function toggleCompact(){ state.compact = !state.compact; renderTable(); }
 
 
-function rowRunReport(number){
-  const a = accounts.find(x => x.number === number);
-  if (!a) return;
-  exportCSV([a], `report_${a.name.replace(/\s+/g,'_')}`);
-  closeAllMenus();
-}
-function rowToggleInactive(number){
-  const a = accounts.find(x => x.number === number);
-  if (!a) return;
-  a.inactive = !a.inactive;
-  closeAllMenus();
-  renderTable();
-}
-function rowDelete(number){
-  const a = accounts.find(x => x.number === number);
-  if (!a) return;
-  if (!confirm(`Delete "${a.name}"? This cannot be undone.`)) { closeAllMenus(); return; }
-  accounts = accounts.filter(x => x.number !== number);
-  state.selected.delete(number);
-  closeAllMenus();
-  renderTable();
-}
-function batchAction(action){
-  if (state.selected.size === 0) { alert("Please select at least one account first."); closeAllMenus(); return; }
-  if (action === "delete") {
-    if (!confirm(`Delete ${state.selected.size} selected account(s)? This cannot be undone.`)) { closeAllMenus(); return; }
-    accounts = accounts.filter(a => !state.selected.has(a.number));
-    state.selected.clear();
-  } else if (action === "inactive") {
-    accounts.forEach(a => { if (state.selected.has(a.number)) a.inactive = true; });
-    state.selected.clear();
-  } else if (action === "report") {
-    exportCSV(accounts.filter(a => state.selected.has(a.number)), "selected_accounts");
-  }
-  closeAllMenus();
-  renderTable();
-}
 
-function exportCSV(list, filenamePrefix){
-  if (list.length === 0) { alert("Nothing to export."); return; }
-  const header = ["Name","Number","Account Type","Detail Type","Balance","Bank Balance"];
-  const rows = [header.join(",")];
-  list.forEach(a => {
-    rows.push([`"${a.name}"`, a.number, `"${a.type}"`, `"${a.detail}"`, a.balance, a.bankBalance].join(","));
-  });
-  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${filenamePrefix}_${new Date().toISOString().slice(0,10)}.csv`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
-function runReport(){
-  exportCSV(getSorted(getFiltered()), "chart_of_accounts");
-}
+function openAccountModal(id = null) {
 
-function openAccountModal(number, isCategory){
-  populateTypeSelect();
-  editingNumber = number || null;
-  const modalTitle = document.getElementById("accountModalTitle");
-  if (editingNumber) {
-    const a = accounts.find(x => x.number === editingNumber);
-    modalTitle.textContent = "Edit account";
-    document.getElementById("fName").value = a.name;
-    document.getElementById("fNumber").value = a.number;
-    document.getElementById("fType").value = a.type;
-    document.getElementById("fDetail").value = a.detail;
-    document.getElementById("fBalance").value = a.balance;
-  } else {
-    modalTitle.textContent = isCategory ? "New category" : "New account";
-    document.getElementById("fName").value = "";
-    document.getElementById("fNumber").value = "";
-    document.getElementById("fType").value = ACCOUNT_TYPES[0];
-    document.getElementById("fDetail").value = "";
-    document.getElementById("fBalance").value = "";
-  }
-  closeAllMenus();
-  document.getElementById("accountModalWrap").classList.remove("hidden");
-}
-function closeAccountModal(){
-  document.getElementById("accountModalWrap").classList.add("hidden");
-  editingNumber = null;
-}
-function saveAccount(){
-  const name = document.getElementById("fName").value.trim();
-  const number = document.getElementById("fNumber").value.trim();
-  const type = document.getElementById("fType").value;
-  const detail = document.getElementById("fDetail").value.trim();
-  const balance = parseFloat(document.getElementById("fBalance").value) || 0;
+    populateTypeSelect();
 
-  if (!name) { alert("Account name is required."); return; }
-  if (number && accounts.some(a => a.number === number && a.number !== editingNumber)) {
-    alert("That account number is already in use."); return;
-  }
+    editingAccountId = id;
 
-  if (editingNumber) {
-    const a = accounts.find(x => x.number === editingNumber);
-    a.name = name; a.number = number || a.number; a.type = type; a.detail = detail; a.balance = balance;
-  } else {
-    accounts.push({ name, number: number || String(Date.now()).slice(-6), type, detail, balance, bankBalance: balance, inactive: false });
-  }
-  closeAccountModal();
-  state.page = 1;
-  renderTable();
-}
+    const modal = document.getElementById("accountModalWrap");
+    const modalTitle = document.getElementById("accountModalTitle");
 
-function closeFeedbackModal(){
-  document.getElementById("feedbackModal").classList.add("hidden");
-  document.getElementById("feedbackText").value = "";
-}
-function submitFeedback(){
-  const text = document.getElementById("feedbackText").value.trim();
-  if (!text) { alert("Please enter some feedback first."); return; }
-  closeFeedbackModal();
-  alert("Thanks for your feedback!");
-}
+    if (id !== null) {
 
+        const a = accounts.find(x => x.id == id);
+
+        if (!a) {
+            alert("Account not found.");
+            return;
+        }
+
+        modalTitle.textContent = "Edit Account";
+
+        document.getElementById("fName").value = a.name;
+        document.getElementById("fType").value = a.type;
+        document.getElementById("fDetail").value = a.detail;
+        document.getElementById("fBalance").value = a.balance;
+
+    } else {
+
+        editingAccountId = null;
+
+        modalTitle.textContent = "New Account";
+
+        document.getElementById("fName").value = "";
+        document.getElementById("fType").value = ACCOUNT_TYPES[0];
+        document.getElementById("fDetail").value = "";
+        document.getElementById("fBalance").value = 0;
+    }
+
+    closeAllMenus();
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+function closeAccountModal() {
+    const modal = document.getElementById("accountModalWrap");
+
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
+}
+async function saveAccount() {
+
+    const name = document.getElementById("fName").value.trim();
+    const type = document.getElementById("fType").value;
+    const detail = document.getElementById("fDetail").value.trim();
+    const balance = parseFloat(document.getElementById("fBalance").value) || 0;
+
+    if (!name) {
+        alert("Account name is required.");
+        return;
+    }
+
+    try {
+
+        // Decide whether we're creating or updating
+        let url = "{{ route('accounts.store') }}";
+        let method = "POST";
+
+        if (editingAccountId !== null) {
+            url = `/accounts/${editingAccountId}`;
+            method = "PUT";
+        }
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({
+                name,
+                type,
+                detail,
+                balance
+            })
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        if (data.success) {
+
+            if (editingAccountId === null) {
+
+                // New account
+                accounts.push({
+                    id: data.account.id,
+                    name: data.account.name,
+                    number: data.account.number,
+                    type: data.account.type,
+                    detail: data.account.detail,
+                    balance: parseFloat(data.account.balance),
+                    date: data.account.date,
+                    inactive: data.account.inactive
+                });
+
+                alert("Account created successfully!");
+
+            } else {
+
+                // Updated account
+                alert("Account updated successfully!");
+
+            }
+
+            closeAccountModal();
+            state.page = 1;
+            renderTable();
+
+            // Refresh to sync with database
+            location.reload();
+
+        } else {
+            alert("Operation failed.");
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("An error occurred while saving the account.");
+    }
+}
+function confirmDelete(id, name) {
+
+    if (!confirm(`Are you sure you want to delete "${name}"?`)) {
+        return;
+    }
+
+    deleteAccount(id);
+
+}
+async function deleteAccount(id) {
+
+    try {
+
+        const response = await fetch(`/accounts/${id}`, {
+            method: "DELETE",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Accept": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            accounts = accounts.filter(a => a.id !== id);
+
+            renderTable();
+
+            alert("Account deleted successfully!");
+
+        } else {
+
+            alert("Delete failed.");
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+        alert("An error occurred while deleting the account.");
+
+    }
+
+}
 populateTypeFilter();
 renderTable();
 </script>

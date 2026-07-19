@@ -21,11 +21,11 @@ class Procurement extends Model
         'qty',
         'uom',
         'amount',
-        'delivery_status',
-        'status'
+        'order_date'
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
-    ];
+    'amount' => 'decimal:2',
+    'order_date' => 'date',
+];
 }

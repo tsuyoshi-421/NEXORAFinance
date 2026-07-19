@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use App\Models\Order;
 
 class InvoiceController extends Controller
 {
@@ -11,8 +13,11 @@ class InvoiceController extends Controller
     public function index()
     {
         // All invoices for the table
-        $invoices = Invoice::latest('issue_date')->get();
-
+       // Test a linked invoice
+$invoices = Invoice::with('order')
+    ->latest('issue_date')
+    ->get();
+   
         $currentMonth = Carbon::now();
         $lastMonth = Carbon::now()->subMonth();
 
@@ -79,17 +84,36 @@ class InvoiceController extends Controller
 
                 // Current month's overdue invoice amount
                 $currentOverdue = Invoice::where('due_date', '<', now())
-                    ->where('status', 'Pending') // Change if your unpaid status is different
-                    ->whereYear('issue_date', $currentMonth->year)
-                    ->whereMonth('issue_date', $currentMonth->month)
-                    ->sum('outstanding_amount');
+    ->where('status', 'Pending')
+    ->whereYear('issue_date', $currentMonth->year)
+    ->whereMonth('issue_date', $currentMonth->month)
+    ->get()
+    ->sum(function ($invoice) {
+        $subtotal = $invoice->invoice_amount;
+        $discount = $invoice->discount;
+        $shipping = $invoice->shipping_fee;
 
+        $taxable = $subtotal - $discount + $shipping;
+        $grandTotal = $taxable + ($taxable * 0.12);
+
+        return $grandTotal - $invoice->paid_amount;
+    });
                 // Previous month's overdue invoice amount
                 $lastOverdue = Invoice::where('due_date', '<', $lastMonth->copy()->endOfMonth())
-                    ->where('status', 'Pending')
-                    ->whereYear('issue_date', $lastMonth->year)
-                    ->whereMonth('issue_date', $lastMonth->month)
-                    ->sum('outstanding_amount');
+    ->where('status', 'Pending')
+    ->whereYear('issue_date', $lastMonth->year)
+    ->whereMonth('issue_date', $lastMonth->month)
+    ->get()
+    ->sum(function ($invoice) {
+        $subtotal = $invoice->invoice_amount;
+        $discount = $invoice->discount;
+        $shipping = $invoice->shipping_fee;
+
+        $taxable = $subtotal - $discount + $shipping;
+        $grandTotal = $taxable + ($taxable * 0.12);
+
+        return $grandTotal - $invoice->paid_amount;
+    });
 
                 // Percentage change
                 if ($lastOverdue > 0) {
@@ -141,32 +165,64 @@ class InvoiceController extends Controller
     }
 
     // Create a new invoice
-    public function store()
-    {
-        Invoice::create([
-            'client_id'          => 1,
-            'issue_date'         => now(),
-            'due_date'           => '2025-08-01',
-            'invoice_amount'     => 900000,
-            'paid_amount'        => 10000,
-            'outstanding_amount' => 890000,
-            'status'             => 'Draft',
-        ]);
+    public function store(Request $request)
+{
+    $validated = $request->validate([
+        'client_id' => 'required|integer',
+        'issue_date' => 'required|date',
+        'due_date' => 'required|date',
 
-        return back()->with('success', 'Invoice created successfully.');
-    }
+        'invoice_amount' => 'required|numeric',
+        'discount' => 'nullable|numeric',
+        'shipping_fee' => 'nullable|numeric',
+
+        'paid_amount' => 'nullable|numeric',
+
+        'payment_method' => 'nullable|string|max:30',
+        'reference_number' => 'nullable|string|max:100',
+        'payment_details' => 'nullable|string',
+
+        'payment_status' => 'nullable|string|max:20',
+        'status' => 'required|string|max:20',
+    ]);
+
+    Invoice::create([
+        'client_id' => $validated['client_id'],
+        'issue_date' => $validated['issue_date'],
+        'due_date' => $validated['due_date'],
+
+        'invoice_amount' => $validated['invoice_amount'],
+        'discount' => $validated['discount'] ?? 0,
+        'shipping_fee' => $validated['shipping_fee'] ?? 0,
+
+        'paid_amount' => $validated['paid_amount'] ?? 0,
+
+        'payment_method' => $validated['payment_method'] ?? null,
+        'reference_number' => $validated['reference_number'] ?? null,
+        'payment_details' => $validated['payment_details'] ?? null,
+
+        'payment_status' => $validated['payment_status'] ?? 'Unpaid',
+        'status' => $validated['status'],
+    ]);
+
+    return back()->with('success', 'Invoice created successfully.');
+}
 
     // Update an invoice
-    public function update($id)
-    {
-        $invoice = Invoice::findOrFail($id);
+    public function update(Request $request, Invoice $invoice)
+{
+    $request->validate([
+        'invoice_amount' => 'required|numeric',
+        'status' => 'required',
+    ]);
 
-        $invoice->update([
-            'invoice_amount' => 1000000,
-        ]);
+    $invoice->update([
+        'invoice_amount' => $request->invoice_amount,
+        'status' => $request->status,
+    ]);
 
-        return back()->with('success', 'Invoice updated successfully.');
-    }
+    return redirect()->back()->with('success','Invoice updated.');
+}
 
     // Delete an invoice
     public function destroy($id)
@@ -175,4 +231,33 @@ class InvoiceController extends Controller
 
         return back()->with('success', 'Invoice deleted successfully.');
     }
+    public function print($id)
+{
+    $invoice = Invoice::findOrFail($id);
+
+    $subtotal = $invoice->invoice_amount;
+
+    $discount = $invoice->discount;
+
+    $shipping = $invoice->shipping_fee;
+
+    $taxable = $subtotal - $discount + $shipping;
+
+    $vat = $taxable * 0.12;
+
+    $grandTotal = $taxable + $vat;
+
+    $balanceDue = $grandTotal - $invoice->paid_amount;
+
+    return view('print.invoice', compact(
+        'invoice',
+        'subtotal',
+        'discount',
+        'shipping',
+        'taxable',
+        'vat',
+        'grandTotal',
+        'balanceDue'
+    ));
+}
 }

@@ -54,13 +54,25 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
       
       <div>
         <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+          
           <div class="relative">
             <button onclick="event.stopPropagation(); toggleRangeMenu()" class="dd-toggle flex items-center gap-2 text-xs text-muted hover:text-white bg-navy-800 border border-navy-600 rounded-lg px-3 py-1.5 transition tracking-wide">
-              <span id="rangeBtnLabel">LAST 6 MONTHS</span>
+              <span id="rangeBtnLabel">
+              @if($range == 'week')
+                  LAST WEEK
+              @elseif($range == 'month')
+                  LAST MONTH
+              @elseif($range == 'year')
+                  LAST YEAR
+              @else
+                  LAST 6 MONTHS
+              @endif
+              </span>
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <div id="rangeMenu" class="dd-menu hidden absolute left-0 mt-1 bg-navy-800 border border-navy-600 rounded-lg shadow-lg text-xs w-40 overflow-hidden z-20"></div>
           </div>
+
           <div id="chartLegend" class="flex flex-wrap items-center gap-4 text-sm"></div>
         </div>
         <svg id="trendChart" viewBox="0 0 640 210" class="w-full h-64"></svg>
@@ -84,22 +96,14 @@ const categories = [
     capacity: {{ $overallExpenses }},
     value: {{ $procurementTotal }},
     prevValue: {{ $procurementTotal }},
-
-    trend:[
-        {{ $procurementTotal }},
-        {{ $procurementTotal }},
-        {{ $procurementTotal }},
-        {{ $procurementTotal }},
-        {{ $procurementTotal }},
-        {{ $procurementTotal }}
-    ]
-},
+    trend: @json($totals),
+  },
   { key:"inventory",     label:"Inventory",     color:"#ef476f", capacity:5932,  value:2254, prevValue:2170, trend:[2600,2300,2700,2500,2100,2254] },
   { key:"orderFulfillment", label:"Order Fulfillment", color:"#f5a623", capacity:5625, value:1800, prevValue:1850, trend:[1400,1600,1500,1750,1600,1800] },
 ];
 const rangeOptions = ["LAST 6 MONTHS", "LAST WEEK", "LAST MONTH", "LAST YEAR"];
 let rangeIndex = 0;
-let months = ["February","March","April","May","June","July"];
+let months = @json($labels);
 const budgetCap = 20000;
 
 function getLabelsForRange(label){
@@ -255,18 +259,23 @@ document.addEventListener("click", (e) => {
   if (!e.target.closest(".dd-menu") && !e.target.closest(".dd-toggle")) closeAllMenus();
 });
 
-function selectRange(label){
-  closeAllMenus();
-  if (label !== "LAST 6 MONTHS") return;
+function selectRange(label) {
+    closeAllMenus();
 
-  rangeIndex = rangeOptions.indexOf(label);
-  document.getElementById("rangeBtnLabel").textContent = label;
-  months = getLabelsForRange(label);
+    const ranges = {
+        "LAST WEEK": "week",
+        "LAST MONTH": "month",
+        "LAST 6 MONTHS": "6months",
+        "LAST YEAR": "year"
+    };
 
-  renderAll();
-  renderRangeMenu();
+    // Update the dropdown label immediately
+    document.getElementById("rangeBtnLabel").textContent = label;
+
+    // Redirect to the same page with the selected range
+    window.location.href = "{{ route('expensesdash') }}?range=" + ranges[label];
 }
-
+ 
 function renderAll(){
   renderLegend();
   renderTotals();

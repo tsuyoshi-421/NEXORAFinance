@@ -16,6 +16,25 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    #printInvoice {
+    display: none;
+}
+
+@media print {
+
+    body > *:not(#printInvoice) {
+        display: none !important;
+    }
+
+    #printInvoice {
+        display: block !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+}
   </style>
 </head>
 <body class="bg-navy-900 text-white font-sans p-5">
@@ -35,9 +54,9 @@
     ₱{{ number_format($currentTotal, 2) }}
 </div>
 
-<small class="{{ $color }}">
-    {{ $trend }}{{ number_format(abs($percent), 1) }}% vs last month
-</small>
+      <small class="{{ $color }}">
+          {{ $trend }}{{ number_format(abs($percent), 1) }}% vs last month
+      </small>
     </div>
 
     <div class="bg-navy-800 rounded-xl p-5 flex flex-col gap-2">
@@ -95,7 +114,7 @@
       <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
         <h3 class="text-lg font-semibold">Invoice List</h3>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2" >
           <div class="flex items-center gap-2 bg-navy-700 rounded-lg px-3 py-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
             <input id="searchInput" type="text" placeholder="Search Invoices..."
@@ -121,24 +140,17 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
             Export
           </button>
-
+           <button onclick="openInvoiceModal()" class="flex items-center gap-1 bg-emerald-500 hover:bg-emerald-600 transition text-sm rounded-lg px-3 py-2 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+            Create
+          </button>
           <div class="relative">
-            <button onclick="document.getElementById('moreMenu').classList.toggle('hidden')"
-                    class="bg-navy-700 rounded-lg px-3 py-2 text-sm">⋯</button>
-            <div id="moreMenu" class="hidden absolute right-0 mt-1 bg-navy-700 rounded-lg shadow-lg text-sm w-40 overflow-hidden z-10">
-              <button onclick="createInvoicePrompt()" class="w-full text-left px-3 py-2 hover:bg-navy-600">New Invoice</button>
-              <button onclick="printTable()" class="w-full text-left px-3 py-2 hover:bg-navy-600">Print</button>
-            </div>
+            
           </div>
         </div>
+        
       </div>
 
-      <div class="flex flex-wrap gap-2 mb-4 bg-navy-700/60 rounded-lg p-3">
-        <input id="invoiceNumber" placeholder="Invoice #" class="bg-navy-700 rounded-md px-3 py-2 text-sm outline-none flex-1 min-w-[100px]">
-        <input id="clientName" placeholder="Client" class="bg-navy-700 rounded-md px-3 py-2 text-sm outline-none flex-1 min-w-[100px]">
-        <input id="amount" placeholder="Amount" class="bg-navy-700 rounded-md px-3 py-2 text-sm outline-none flex-1 min-w-[100px]">
-        <button onclick="createInvoice()" class="bg-emerald-500 hover:bg-emerald-600 transition rounded-md px-4 py-2 text-sm font-medium">+ Create</button>
-      </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -193,25 +205,237 @@
     </div>
   </div>
 
-  <div class="bg-navy-800 rounded-xl p-5">
-    <div class="flex items-center justify-between mb-2">
-      <h3 class="text-lg font-semibold">Monthly Invoice Trend</h3>
-      <select class="bg-navy-700 text-sm rounded-lg px-3 py-1 outline-none">
-        <option>This year</option>
-        <option>Last year</option>
-      </select>
+ 
+
+</div>
+<div id="invoiceModalWrap" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+  <div class="bg-navy-800 rounded-xl p-6 w-full max-w-md space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-lg font-semibold">New Invoice</h3>
+      <button onclick="closeInvoiceModal()" class="text-muted hover:text-white">✕</button>
     </div>
-    <div class="flex items-center gap-4 text-xs text-muted mb-2">
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span> Invoice Amount</span>
-      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span> Paid Amount</span>
+    <div class="space-y-3 text-sm">
+      <div>
+        <label class="text-muted text-xs">Invoice #</label>
+        <input id="invoiceNumber" type="text" placeholder="Invoice #" class="w-full mt-1 bg-navy-700 rounded-lg px-3 py-2 outline-none">
+      </div>
+      <div>
+        <label class="text-muted text-xs">Client</label>
+        <input id="clientName" type="text" placeholder="Client" class="w-full mt-1 bg-navy-700 rounded-lg px-3 py-2 outline-none">
+      </div>
+      <div>
+        <label class="text-muted text-xs">Amount</label>
+        <input id="amount" type="number" placeholder="Amount" class="w-full mt-1 bg-navy-700 rounded-lg px-3 py-2 outline-none">
+      </div>
     </div>
-    <svg id="trendChart" viewBox="0 0 700 220" class="w-full h-56"></svg>
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="closeInvoiceModal()" class="border border-navy-600 hover:bg-navy-700 transition rounded-lg px-4 py-2 text-sm">Cancel</button>
+      <button onclick="createInvoice()" class="bg-emerald-500 hover:bg-emerald-600 transition rounded-lg px-4 py-2 text-sm font-medium">+ Create</button>
+    </div>
   </div>
+</div>
+<!-- =========================
+     Edit Invoice Modal
+========================== -->
+
+<div id="editInvoiceModal"
+     class="fixed inset-0 hidden flex items-center justify-center bg-black/60 z-50">
+
+    <div class="bg-navy-800 w-full max-w-xl rounded-xl shadow-2xl border border-navy-600">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-navy-600">
+
+            <h2 class="text-xl font-semibold text-white">
+                Edit Invoice
+            </h2>
+
+            <button
+                type="button"
+                onclick="closeEditModal()"
+                class="text-gray-400 hover:text-white text-2xl leading-none">
+                &times;
+            </button>
+
+        </div>
+
+        <!-- Form -->
+        <form id="editInvoiceForm" method="POST">
+
+            @csrf
+            @method('PUT')
+
+            <input
+                type="hidden"
+                id="editInvoiceId"
+                name="invoice_id">
+
+            <!-- Body -->
+            <div class="p-6 space-y-5">
+
+                <!-- Client -->
+                <div>
+
+                    <label class="block text-sm text-muted mb-1">
+                        Client
+                    </label>
+
+                    <input
+                        id="editClient"
+                        name="client"
+                        type="text"
+                        readonly
+                        class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 text-white cursor-not-allowed">
+
+                </div>
+
+                <!-- Status -->
+                <div>
+
+                    <label class="block text-sm text-muted mb-1">
+                        Invoice Status
+                    </label>
+
+                    <select
+                        id="editStatus"
+                        name="status"
+                        class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 text-white">
+
+                        <option value="Draft">Draft</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Overdue">Overdue</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Dates -->
+                <div class="grid grid-cols-2 gap-4">
+
+                    <div>
+
+                        <label class="block text-sm text-muted mb-1">
+                            Issue Date
+                        </label>
+
+                        <input
+                            id="editIssue"
+                            name="issue_date"
+                            type="date"
+                            class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 text-white">
+
+                    </div>
+
+                    <div>
+
+                        <label class="block text-sm text-muted mb-1">
+                            Due Date
+                        </label>
+
+                        <input
+                            id="editDue"
+                            name="due_date"
+                            type="date"
+                            class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 text-white">
+
+                    </div>
+
+                </div>
+
+                <!-- Amount -->
+                <div>
+
+                    <label class="block text-sm text-muted mb-1">
+                        Invoice Amount
+                    </label>
+
+                    <div class="relative">
+
+                        <span class="absolute left-3 top-2.5 text-muted">
+                            ₱
+                        </span>
+
+                        <input
+                            id="editAmount"
+                            name="invoice_amount"
+                            type="number"
+                            step="0.01"
+                            class="w-full bg-navy-700 border border-navy-600 rounded-lg pl-8 pr-3 py-2 text-white">
+
+                    </div>
+
+                </div>
+
+                <!-- Payment Method -->
+                <div>
+
+                    <label class="block text-sm text-muted mb-1">
+                        Payment Method
+                    </label>
+
+                    <input
+                        id="editPaymentMethod"
+                        name="payment_method"
+                        type="text"
+                        placeholder="Cash / GCash / Maya / Bank"
+                        class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 text-white">
+
+                </div>
+
+                <!-- Payment Status -->
+                <div>
+
+                    <label class="block text-sm text-muted mb-1">
+                        Payment Status
+                    </label>
+
+                    <select
+                        id="editPaymentStatus"
+                        name="payment_status"
+                        class="w-full bg-navy-700 border border-navy-600 rounded-lg px-3 py-2 text-white">
+
+                        <option value="Unpaid">Unpaid</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Paid">Paid</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end gap-3 px-6 py-4 border-t border-navy-600">
+
+                <button
+                    type="button"
+                    onclick="closeEditModal()"
+                    class="px-4 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 text-white">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">
+
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 <div id="invoiceTableBody"></div>
+
 <script>
-   const rawInvoices = @json($invoices);
+  const rawInvoices = @json($invoices);
 
 const clients = [
     "ABC Corporation",
@@ -222,15 +446,31 @@ const clients = [
 ];
 
 let invoices = rawInvoices.map(inv => ({
+    id: inv.invoice_id,
     number: `INV-${inv.invoice_id}`,
-    client: clients[inv.client_id - 1] ?? `Client ${inv.client_id}`,
-    issue: inv.issue_date,
-    due: inv.due_date,
-    amount: Number(inv.invoice_amount),
+
+    issue_date: inv.issue_date,
+    due_date: inv.due_date,
+    invoice_amount: Number(inv.invoice_amount),
+
+    paid_amount: Number(inv.paid_amount),
+    discount: Number(inv.discount ?? 0),
+    shipping_fee: Number(inv.shipping_fee ?? 0),
+
+    order_id: inv.order_id,
+    client: inv.order?.customer_name ?? "",
+    client_name: inv.order?.customer_name ?? "",
+    client_address: inv.order?.address ?? "",
+    product_name: inv.order?.product_name ?? "",
+    qty: Number(inv.order?.qty ?? 0),
+    unit_price: Number(inv.order?.amount ?? 0),
+
+    payment_method: inv.payment_method ?? "",
+    payment_status: inv.payment_status ?? "",
+    reference_number: inv.reference_number ?? "",
+    payment_details: inv.payment_details ?? "",
     status: inv.status
 }));
-
-
 let recentActivity = [
   { text: "Invoice #2891 has been paid", sub: "ABC Corporation", time: "2h ago", type: "paid" },
   { text: "Invoice #1234 has been sent", sub: "ABC Corporation", time: "2h ago", type: "sent" },
@@ -253,37 +493,6 @@ function fmtDate(iso){
   return d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
 }
 
-/* ccreate------ */
-function createInvoice() {
-  const num = document.getElementById("invoiceNumber").value.trim();
-  const client = document.getElementById("clientName").value.trim();
-  const amt = parseFloat(document.getElementById("amount").value.trim());
-
-  if (!num || !client || !amt) { alert("Please fill in invoice #, client, and amount."); return; }
-
-  invoices.push({
-    number: num, client: client,
-    issue: new Date().toISOString().slice(0,10),
-    due: new Date().toISOString().slice(0,10),
-    amount: amt, status: "Draft"
-  });
-
-  document.getElementById("invoiceNumber").value = "";
-  document.getElementById("clientName").value = "";
-  document.getElementById("amount").value = "";
-
-  renderInvoices();
-}
-
-function createInvoicePrompt() {
-  const num = prompt("Invoice #:");
-  if (!num) return;
-  const client = prompt("Client name:");
-  const amt = parseFloat(prompt("Amount:"));
-  if (!client || !amt) return;
-  invoices.push({ number: num, client, issue: new Date().toISOString().slice(0,10), due: new Date().toISOString().slice(0,10), amount: amt, status: "Draft" });
-  renderInvoices();
-}
 
 function getFilteredInvoices() {
   const q = document.getElementById("searchInput").value.toLowerCase();
@@ -296,53 +505,126 @@ function getFilteredInvoices() {
   });
 }
 function renderInvoices() {
-  const filtered = getFilteredInvoices();
-  const perPage = parseInt(document.getElementById("perPage").value);
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-  if (currentPage > totalPages) currentPage = totalPages;
+    const filtered = getFilteredInvoices();
+    const perPage = parseInt(document.getElementById("perPage").value);
+    const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
 
-  const start = (currentPage - 1) * perPage;
-  const pageItems = filtered.slice(start, start + perPage);
+    if (currentPage > totalPages) currentPage = totalPages;
 
-  const tbody = document.getElementById("invoiceTableBody");
-  tbody.innerHTML = "";
+    const start = (currentPage - 1) * perPage;
+    const pageItems = filtered.slice(start, start + perPage);
 
-  pageItems.forEach(inv => {
-    const row = document.createElement("tr");
-    row.className = "border-b border-navy-700/60 hover:bg-navy-700/40 transition";
-    row.innerHTML = `
-      <td class="py-2 pr-2 text-blue-400 font-medium">${inv.number}</td>
-      <td class="py-2 pr-2">${inv.client}</td>
-      <td class="py-2 pr-2 text-muted">${fmtDate(inv.issue)}</td>
-      <td class="py-2 pr-2 text-muted">${fmtDate(inv.due)}</td>
-      <td class="py-2 pr-2">${fmtPeso(inv.amount)}</td>
-      <td class="py-2 pr-2">
-        <span class="inline-flex items-center justify-center text-xs font-semibold rounded-md px-2 py-1 w-[70px] ${statusStyles[inv.status]}">${inv.status}</span>
-      </td>
-      <td class="py-2 pr-2">
-        <div class="flex gap-2 text-muted">
-          <button title="View" onclick="viewInvoice('${inv.number}')" class="hover:text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button title="Edit" onclick="updateInvoice('${inv.number}')" class="hover:text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4z"/></svg>
-          </button>
-          <button title="Delete" onclick="deleteInvoice('${inv.number}')" class="hover:text-red-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
-          </button>
-        </div>
-      </td>`;
-    tbody.appendChild(row);
-  }); 
+    const tbody = document.getElementById("invoiceTableBody");
+    tbody.innerHTML = "";
 
-  document.getElementById("pageInfo").textContent =
-    `Showing ${filtered.length === 0 ? 0 : start+1} to ${Math.min(start+perPage, filtered.length)} of ${filtered.length} invoices`;
+    pageItems.forEach(inv => {
 
-  renderPageNumbers(totalPages);
-  renderStats();
-  renderSummary();
-  renderActivity();
-  renderTrendChart();
+        const row = document.createElement("tr");
+        row.className =
+            "border-b border-navy-700/60 hover:bg-navy-700/40 transition";
+
+        row.innerHTML = `
+            <td class="py-2 pr-2 text-blue-400 font-medium">${inv.number}</td>
+
+            <td class="py-2 pr-2">
+                ${inv.client}
+            </td>
+
+            <td class="py-2 pr-2 text-muted">
+                ${fmtDate(inv.issue_date)}
+            </td>
+
+            <td class="py-2 pr-2 text-muted">
+                ${fmtDate(inv.due_date)}
+            </td>
+
+            <td class="py-2 pr-2">
+                ${fmtPeso(inv.invoice_amount)}
+            </td>
+
+            <td class="py-2 pr-2">
+                <span class="inline-flex items-center justify-center text-xs font-semibold rounded-md px-2 py-1 w-[70px] ${statusStyles[inv.status]}">
+                    ${inv.status}
+                </span>
+            </td>
+
+            <td class="py-2 pr-2">
+                <div class="flex gap-2 text-muted">
+
+                    <button
+                        type="button"
+                        onclick="printInvoice(${inv.id})"
+                        title="Print"
+                        class="text-blue-400 hover:text-blue-300">
+
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-4 h-4"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2">
+
+                            <path d="M6 9V2h12v7"/>
+                            <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+                            <path d="M6 14h12v8H6z"/>
+
+                        </svg>
+
+                    </button>
+
+                   <button
+                        title="Edit"
+                        onclick="openEditModal(${inv.id})"
+                        class="hover:text-white">
+
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-4 h-4"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2">
+
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                            <path d="M18.5 2.5a2.1 2.1 0 013 3L12 15l-4 1 1-4z"/>
+
+                        </svg>
+
+                    </button>
+
+                    <button
+                        title="Delete"
+                        onclick="deleteInvoice('${inv.number}')"
+                        class="hover:text-red-400">
+
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-4 h-4"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2">
+
+                            <path d="M3 6h18"/>
+                            <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+
+                        </svg>
+
+                    </button>
+
+                </div>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+
+    document.getElementById("pageInfo").textContent =
+        `Showing ${filtered.length === 0 ? 0 : start + 1} to ${Math.min(start + perPage, filtered.length)} of ${filtered.length} invoices`;
+
+    renderPageNumbers(totalPages);
+    renderStats();
+    renderSummary();
+    renderActivity();
 }
 
 function renderPageNumbers(totalPages) {
@@ -378,16 +660,25 @@ function changePage(delta) {
 })();
 
 /* update */
-function updateInvoice(num) {
-  const invoice = invoices.find(inv => inv.number === num);
-  if (!invoice) return;
-  const newClient = prompt("Client name:", invoice.client);
-  const newAmount = parseFloat(prompt("Amount:", invoice.amount));
-  const newStatus = prompt("Status (Paid / Pending / Overdue / Draft):", invoice.status);
-  if (newClient) invoice.client = newClient;
-  if (!isNaN(newAmount)) invoice.amount = newAmount;
-  if (newStatus && statusStyles[newStatus]) invoice.status = newStatus;
-  renderInvoices();
+function openEditModal(id) {
+
+    const invoice = invoices.find(i => i.id == id);
+
+    if (!invoice) return;
+
+    document.getElementById("editInvoiceId").value = invoice.id;
+    document.getElementById("editClient").value = invoice.client;
+    document.getElementById("editAmount").value = invoice.amount;
+    document.getElementById("editStatus").value = invoice.status;
+
+    document.getElementById("editInvoiceModal")
+        .classList.remove("hidden");
+}
+function closeEditModal() {
+    const modal = document.getElementById("editInvoiceModal");
+
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
 }
 
 /* delete */
@@ -395,12 +686,6 @@ function deleteInvoice(num) {
   if (!confirm(`Delete invoice ${num}?`)) return;
   invoices = invoices.filter(inv => inv.number !== num);
   renderInvoices();
-}
-
-function viewInvoice(num) {
-  const inv = invoices.find(inv => inv.number === num);
-  if (!inv) return;
-  alert(`Invoice ${inv.number}\nClient: ${inv.client}\nAmount: ${fmtPeso(inv.amount)}\nStatus: ${inv.status}\nIssue: ${fmtDate(inv.issue)}\nDue: ${fmtDate(inv.due)}`);
 }
 
 function exportCSV() {
@@ -414,9 +699,9 @@ function exportCSV() {
     csvRows.push([
       inv.number,
       `"${inv.client}"`,
-      fmtDate(inv.issue),
-      fmtDate(inv.due),
-      inv.amount,
+      fmtDate(inv.issue_date),
+      fmtDate(inv.due_date),
+      inv.invoice_amount,
       inv.status
     ].join(","));
   });
@@ -432,15 +717,12 @@ function exportCSV() {
   URL.revokeObjectURL(url);
 }
 
-function printTable() {
-  window.print();
-}
 
 function renderStats() {
-  const total = invoices.reduce((s,i) => s + i.amount, 0);
-  const paid = invoices.filter(i=>i.status==="Paid").reduce((s,i)=>s+i.amount,0);
-  const pending = invoices.filter(i=>i.status==="Pending").reduce((s,i)=>s+i.amount,0);
-  const overdue = invoices.filter(i=>i.status==="Overdue").reduce((s,i)=>s+i.amount,0);
+  const total = invoices.reduce((s,i) => s + i.invoice_amount, 0);
+  const paid = invoices.filter(i=>i.status==="Paid").reduce((s,i)=>s+i.invoice_amount,0);
+  const pending = invoices.filter(i=>i.status==="Pending").reduce((s,i)=>s+i.invoice_amount,0);
+  const overdue = invoices.filter(i=>i.status==="Overdue").reduce((s,i)=>s+i.invoice_amount,0);
 
   document.getElementById("statTotal").textContent = fmtPeso(total);
   document.getElementById("statPaid").textContent = fmtPeso(paid);
@@ -449,10 +731,10 @@ function renderStats() {
 }
 
 function renderSummary() {
-  const total = invoices.reduce((s,i)=>s+i.amount,0) || 1;
-  const paid = invoices.filter(i=>i.status==="Paid").reduce((s,i)=>s+i.amount,0);
-  const pending = invoices.filter(i=>i.status==="Pending").reduce((s,i)=>s+i.amount,0);
-  const overdue = invoices.filter(i=>i.status==="Overdue").reduce((s,i)=>s+i.amount,0);
+  const total = invoices.reduce((s,i)=>s+i.invoice_amount,0) || 1;
+  const paid = invoices.filter(i=>i.status==="Paid").reduce((s,i)=>s+i.invoice_amount,0);
+  const pending = invoices.filter(i=>i.status==="Pending").reduce((s,i)=>s+i.invoice_amount,0);
+  const overdue = invoices.filter(i=>i.status==="Overdue").reduce((s,i)=>s+i.invoice_amount,0);
 
   const segments = [
     { label: "Paid", value: paid, color: "#2ecc71" },
@@ -512,55 +794,450 @@ function renderActivity() {
     </li>`).join("");
 }
 
-function renderTrendChart() {
-  const months = ["Jan","Feb","Mar","Apr","May","June","July","Aug","Sep","Oct","Nov","Dec"];
-  const invoiceAmt = [20,35,55,60,75,68,90,70,60,50,55,60];
-  const paidAmt    = [15,30,45,50,60,55,80,60,50,40,45,50];
 
-  const svg = document.getElementById("trendChart");
-  svg.innerHTML = "";
-  const w = 700, h = 220, padX = 30, padY = 20;
-  const maxVal = Math.max(...invoiceAmt, ...paidAmt) * 1.1;
-
-  const toPoints = (arr) => arr.map((v,i) => {
-    const x = padX + (i * (w - padX*2) / (arr.length - 1));
-    const y = h - padY - (v / maxVal) * (h - padY*2);
-    return `${x},${y}`;
-  }).join(" ");
-  months.forEach((m,i) => {
-    const x = padX + (i * (w - padX*2) / (months.length - 1));
-    const label = document.createElementNS("http://www.w3.org/2000/svg","text");
-    label.setAttribute("x", x); label.setAttribute("y", h - 2);
-    label.setAttribute("fill", "#9bb0d1"); label.setAttribute("font-size", "10"); label.setAttribute("text-anchor","middle");
-    label.textContent = m;
-    svg.appendChild(label);
-  });
-
-  const makeLine = (points, color) => {
-    const poly = document.createElementNS("http://www.w3.org/2000/svg","polyline");
-    poly.setAttribute("points", points);
-    poly.setAttribute("fill", "none");
-    poly.setAttribute("stroke", color);
-    poly.setAttribute("stroke-width", "2.5");
-    poly.setAttribute("stroke-linecap", "round");
-    poly.setAttribute("stroke-linejoin", "round");
-    svg.appendChild(poly);
-
-    points.split(" ").forEach(pt => {
-      const [x,y] = pt.split(",");
-      const dot = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("r", "3");
-      dot.setAttribute("fill", color);
-      svg.appendChild(dot);
-    });
-  };
-
-  makeLine(toPoints(invoiceAmt), "#4ca6ff");
-  makeLine(toPoints(paidAmt), "#2ecc71");
-}
 
 document.addEventListener("DOMContentLoaded", renderInvoices);
+
+function openInvoiceModal() {
+  document.getElementById("invoiceNumber").value = "";
+  document.getElementById("clientName").value = "";
+  document.getElementById("amount").value = "";
+  document.getElementById("invoiceModalWrap").classList.remove("hidden");
+}
+function closeInvoiceModal() {
+  document.getElementById("invoiceModalWrap").classList.add("hidden");
+}
+
+function createInvoice() {
+  const num = document.getElementById("invoiceNumber").value.trim();
+  const client = document.getElementById("clientName").value.trim();
+  const amt = parseFloat(document.getElementById("amount").value.trim());
+
+  if (!num || !client || !amt) { alert("Please fill in invoice #, client, and amount."); return; }
+
+  invoices.push({
+    number: num, client: client,
+    issue_date: new Date().toISOString().slice(0,10),
+    due_date: new Date().toISOString().slice(0,10),
+    invoice_amount: amt, status: "Draft"
+  });
+    closeInvoiceModal();
+  renderInvoices();
+}
+
+function printInvoice(id) {
+
+    const invoice = invoices.find(i => i.id == id);
+
+    if (!invoice) {
+        alert("Invoice not found.");
+        return;
+    }
+
+    // --------------------------
+    // Invoice Information
+    // --------------------------
+
+    document.getElementById("printInvoiceNo").textContent =
+        invoice.number;
+
+    document.getElementById("printIssueDate").textContent =
+        fmtDate(invoice.issue_date);
+
+    document.getElementById("printDueDate").textContent =
+        fmtDate(invoice.due_date);
+
+    // --------------------------
+    // Client Information
+    // --------------------------
+
+    document.getElementById("printBillTo").innerHTML = `
+${invoice.client_name}<br>
+${invoice.client_address}
+`;
+
+document.getElementById("printShipTo").innerHTML = `
+${invoice.client_name}<br>
+${invoice.client_address}
+`;
+
+    // --------------------------
+    // Invoice Items
+    // --------------------------
+
+   let html = `
+<tr>
+    <td>1</td>
+    <td>${invoice.product_name}</td>
+    <td>${invoice.qty}</td>
+    <td>${fmtPeso(invoice.unit_price)}</td>
+    <td>${fmtPeso(invoice.qty * invoice.unit_price)}</td>
+</tr>
+`;
+
+document.getElementById("printItems").innerHTML = html;
+
+    // --------------------------
+    // Totals
+    // --------------------------
+
+    const subtotal = invoice.qty * invoice.unit_price;
+    const discount = invoice.discount;
+      const shipping = invoice.shipping_fee;
+
+      const taxable = subtotal - discount + shipping;
+      const vat = taxable * 0.12;
+      const grandTotal = taxable + vat;
+      const balance = grandTotal - invoice.paid_amount;
+    document.getElementById("printSubtotal").textContent =
+        fmtPeso(subtotal);
+
+    document.getElementById("printDiscount").textContent =
+        fmtPeso(discount);
+
+    document.getElementById("printShipping").textContent =
+        fmtPeso(shipping);
+
+    document.getElementById("printVAT").textContent =
+        fmtPeso(vat);
+
+    document.getElementById("printGrandTotal").textContent =
+        fmtPeso(grandTotal);
+
+    document.getElementById("printPaid").textContent =
+        fmtPeso(invoice.paid_amount);
+
+    document.getElementById("printBalance").textContent =
+        fmtPeso(balance);
+
+    // --------------------------
+    // Payment Information
+    // --------------------------
+
+    document.getElementById("printPaymentMethod").textContent =
+        invoice.payment_method || "-";
+
+    document.getElementById("printReference").textContent =
+        invoice.reference_number || "-";
+
+    document.getElementById("printPaymentDetails").textContent =
+        invoice.payment_details || "-";
+
+    document.getElementById("printPaymentStatus").textContent =
+        invoice.payment_status || "-";
+
+    // --------------------------
+    // Print
+    // --------------------------
+
+    window.print();
+}
 </script>
+<div id="printInvoice" style="display:none;">
+    <!-- Invoice HTML will go here -->
+
+   <style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+@page{
+    size:A4;
+    margin:12mm;
+}
+
+body{
+    background:#f5f5f5;
+    padding:30px;
+}
+
+.invoice{
+    width:100%;
+    max-width:900px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+}
+
+.company h1{
+    font-size:48px;
+    font-weight:bold;
+}
+
+.company h2{
+    font-size:22px;
+    margin-top:5px;
+}
+
+.company p{
+    color:#555;
+    margin-top:4px;
+}
+
+.logo img{
+    width:90px;
+}
+
+.info{
+    margin-top:40px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.info .box{
+    width:30%;
+}
+
+.info h4{
+    margin-bottom:8px;
+}
+
+.invoice-info table{
+    width:100%;
+}
+
+.invoice-info td{
+    padding:5px 0;
+}
+
+.items{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:40px;
+}
+
+.items thead{
+    background:#4c9df0;
+    color:white;
+}
+
+.items th{
+    padding:12px;
+    text-align:center;
+}
+
+.items td{
+    padding:10px;
+    text-align:center;
+    border-bottom:1px solid #ddd;
+}
+
+.summary{
+    width:250px;
+    margin-top:40px;
+    margin-left:auto;
+}
+
+.summary table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.summary td{
+    border:1px solid #999;
+    padding:10px;
+}
+
+.footer{
+    margin-top:80px;
+}
+
+.footer h4{
+    margin-bottom:10px;
+}
+
+.line{
+    margin-top:60px;
+    border-top:2px solid #999;
+}
+</style>
+<div class="invoice">
+
+    <div class="header">
+
+        <div class="company">
+
+            <h1>INVOICE</h1>
+
+            <h2>Nexora Company</h2>
+
+            <p>
+                Cavite State University<br>
+                Don Severino delas Alas Campus
+            </p>
+
+        </div>
+
+        <div class="logo">
+            <img src="{{asset('images/Nexora_Logo_Transparent.png')}}" alt="logo">
+        </div>
+
+    </div>
+
+
+    <div class="info">
+
+        <div class="box">
+
+            <h4>BILL TO</h4>
+
+            <p id="printBillTo">
+
+</p>
+
+        </div>
+
+        <div class="box">
+
+            <h4>SHIP TO</h4>
+
+            <p id="printShipTo">
+
+</p>
+
+        </div>
+
+        <div class="box invoice-info">
+
+            <table>
+
+                <tr>
+                    <td><strong>Invoice No</strong></td>
+                    <td id="printInvoiceNo"></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Invoice Date</strong></td>
+                   <td id="printIssueDate"></td>
+                </tr>
+
+                <tr>
+                    <td><strong>Due Date</strong></td>
+                    <td id="printDueDate"></td>
+                </tr>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <table class="items">
+
+        <thead>
+
+        <tr>
+
+            <th>#</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Rate</th>
+            <th>Amount</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody id="printItems">
+
+</tbody>
+
+    </table>
+
+
+    <div class="summary">
+
+        <table>
+
+<tr>
+<td>Subtotal</td>
+<td id="printSubtotal"></td>
+</tr>
+
+<tr>
+<td>Discount</td>
+<td id="printDiscount"></td>
+</tr>
+
+<tr>
+<td>Shipping Fee</td>
+<td id="printShipping"></td>
+</tr>
+
+<tr>
+<td>VAT (12%)</td>
+<td id="printVAT"></td>
+</tr>
+
+<tr>
+<td><strong>Grand Total</strong></td>
+<td id="printGrandTotal"></td>
+</tr>
+
+<tr>
+<td>Amount Paid</td>
+<td id="printPaid"></td>
+</tr>
+
+<tr>
+<td><strong>Balance Due</strong></td>
+<td id="printBalance"></td>
+</tr>
+
+</table>
+
+    </div>
+
+    <div class="footer">
+
+        <h4>PAYMENT INFORMATION</h4>
+
+<p><strong>Payment Method:</strong> <span id="printPaymentMethod"></span></p>
+
+<p><strong>Reference No:</strong><span id="printReference"></span></p>
+
+<p><strong>Bank / GCash / Maya:</strong> <span id="printPaymentDetails"></span></p>
+
+<p><strong>Payment Status:</strong><span id="printPaymentStatus"></span></p>
+
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:80px;">
+
+<div style="width:40%;text-align:center;">
+
+<div style="border-top:1px solid #000;padding-top:8px;">
+Authorized Signature
+</div>
+
+</div>
+
+<div style="width:40%;text-align:center;">
+
+<div style="border-top:1px solid #000;padding-top:8px;">
+Client Signature
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+</div>
 
 </body>
 </html>

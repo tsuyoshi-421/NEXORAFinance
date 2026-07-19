@@ -18,6 +18,23 @@ return [
             'search_path' => 'public',
             'sslmode' => 'require',
         ],
+        
+        'fulfillment' => [
+            'driver' => 'pgsql',
+            'url' => env('FULFILLMENT_DB_URL'),
+
+            'host' => null,
+            'port' => null,
+            'database' => null,
+            'username' => null,
+            'password' => null,
+
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'require',
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',
