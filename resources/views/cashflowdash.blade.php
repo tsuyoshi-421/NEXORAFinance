@@ -77,7 +77,6 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
 
-    {{-- Cash Flow Trend --}}
     <div class="bg-navy-800 rounded-xl p-5">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
         <h3 class="text-lg font-semibold">Cash Flow Trend</h3>
@@ -91,6 +90,9 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
             <option value="weekly">Weekly</option>
           </select>
         </div>
+      </div>
+      <div class="w-full overflow-x-auto">
+        <svg id="cfTrendChart" viewBox="0 0 640 240" class="w-full h-auto"></svg>
       </div>
     </div>
 
@@ -135,7 +137,7 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
       </div>
       <div class="flex items-center gap-8 flex-wrap">
         <svg id="cfActivityDonut" viewBox="0 0 42 42" class="w-40 h-40 -rotate-90"></svg>
-        <div class="space-y-2 text-sm" id="cfActivityLegend"></div>
+        <div class="space-y-2 text-sm min-h-[120px]" id="cfActivityLegend"></div>
       </div>
     </div>
 
@@ -143,7 +145,6 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-stretch">
 
-    {{-- Cash Flow Statement --}}
     <div class="lg:col-span-1 bg-navy-800 rounded-xl p-5">
       <div class="flex items-center justify-between mb-3">
         <h3 class="text-lg font-semibold">Cash Flow Statement</h3>
@@ -152,7 +153,7 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
           <option>Last month</option>
         </select>
       </div>
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto min-h-[140px]">
         <table class="w-full text-sm">
           <thead>
             <tr class="text-muted text-left border-b border-navy-600">
@@ -175,7 +176,7 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
           <option>Next 7 days</option>
         </select>
       </div>
-      <ul id="cfUpcomingList" class="space-y-3 text-sm"></ul>
+      <ul id="cfUpcomingList" class="space-y-3 text-sm min-h-[140px]"></ul>
     </div>
 
 
@@ -213,74 +214,154 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
 </div>
 
 <script>
-const cashData = {
-  cashOnHand: 16965,
-  changes: { cashOnHand: 12.89, inflow: 12.89, outflow: -12.89, net: 12.89 },
 
-  topline: {
-    inflow: 341542,
-    outflow: 341542,
-    net: 341542,
-  },
+function fmtPeso(n){ 
+  if (typeof n !== 'number' || isNaN(n) || n < 0) n = 0;
+  return "₱" + Math.round(n).toLocaleString(); 
+}
 
-  trend12: {
-    months: ["Jul","Aug","Sep","Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun"],
-    inflow:  [40,55,60,70,65,80,58,62,75,68,72,90],
-    outflow: [35,50,58,60,62,66,55,58,66,60,64,70],
-  },
-
-  summary: {
-    beginningBalance: 341542,
-    inflow: 2892277,
-    outflow: 2892277,
-  },
-
-  byActivity: [
-    { label: "Operations",   value: 2982217, color: "#4ca6ff" },
-    { label: "Sales",        value: 2982217, color: "#2ecc71" },
-    { label: "Investments",  value: 2982217, color: "#f39c12" },
-    { label: "Financing",    value: 2982217, color: "#e74c3c" },
-  ],
-
-  statement: [
-    { category: "Operating Activities", inflow: 223239125, outflow: 22188892, icon: "briefcase" },
-    { category: "Investing Activities", inflow: 889292561, outflow: 5889371,  icon: "trend" },
-    { category: "Financing Activities", inflow: 223239125, outflow: 223239125, icon: "bank" },
-  ],
-
-  upcomingOutflows: [
-    { label: "Rent Payment",      amount: 22188892, due: "Due in 2 days", icon: "home" },
-    { label: "Vendor Payment",    amount: 22188892, due: "Due in 2 days", icon: "cart" },
-    { label: "Utilities Payment", amount: 22188892, due: "Due in 2 days", icon: "bolt" },
-    { label: "Loan Repayment",    amount: 22188892, due: "Due in 2 days", icon: "bank" },
-  ],
-};
-
-function fmtPeso(n){ return "₱" + Math.round(n).toLocaleString(); }
 function fmtChange(pct){
+  if (typeof pct !== 'number' || isNaN(pct)) return "";
   const up = pct >= 0;
   return `${up ? "▲" : "▼"} ${Math.abs(pct).toFixed(2)}% vs. last month`;
 }
 
-function renderTopCards() {
-  document.getElementById("cfCashOnHand").textContent = fmtPeso(cashData.cashOnHand);
-  document.getElementById("cfInflow").textContent = fmtPeso(cashData.topline.inflow);
-  document.getElementById("cfOutflow").textContent = fmtPeso(cashData.topline.outflow);
-  document.getElementById("cfNet").textContent = fmtPeso(cashData.topline.net);
+let cashFlowData = {
+  cashOnHand: { amount: 0, changePct: null },
+  topline: { inflow: 0, outflow: 0, net: 0, changes: { inflow: null, outflow: null, net: null } },
+  trend: { months: [], inflow: [], outflow: [] },
+  summary: { beginningBalance: 0, inflow: 0, outflow: 0 },
+  activity: [],
+  statement: [],
+  upcoming: []
+};
+
+function setCashFlowData(data) {
+  if (!data || typeof data !== 'object') {
+    console.warn('Invalid cash flow data received');
+    return;
+  }
+  
+  if (data.cashOnHand) {
+    setCashOnHand(
+      data.cashOnHand.amount,
+      data.cashOnHand.changePct
+    );
+  }
+  
+  if (data.topline) {
+    setCashFlowTopline(
+      data.topline.inflow,
+      data.topline.outflow,
+      data.topline.net,
+      data.topline.changes?.inflow,
+      data.topline.changes?.outflow,
+      data.topline.changes?.net
+    );
+  }
+  
+  if (data.trend) {
+    setCashFlowTrendData(
+      data.trend.months,
+      data.trend.inflow,
+      data.trend.outflow
+    );
+  }
+  
+  if (data.summary) {
+    setCashFlowSummary(
+      data.summary.beginningBalance,
+      data.summary.inflow,
+      data.summary.outflow
+    );
+  }
+  
+  if (data.activity) {
+    setActivityBreakdown(data.activity);
+  }
+  
+  if (data.statement) {
+    setCashFlowStatement(data.statement);
+  }
+  
+  if (data.upcoming) {
+    setUpcomingOutflows(data.upcoming);
+  }
+}
+
+function setCashOnHand(amount, changePct){
+  cashFlowData.cashOnHand = { 
+    amount: typeof amount === 'number' && !isNaN(amount) && amount >= 0 ? amount : 0, 
+    changePct: typeof changePct === 'number' && !isNaN(changePct) ? changePct : null 
+  };
+  renderCashOnHand();
+}
+
+function renderCashOnHand(){
+  document.getElementById("cfCashOnHand").textContent = fmtPeso(cashFlowData.cashOnHand.amount);
+  const el = document.getElementById("cfCashOnHandChange");
+  if (cashFlowData.cashOnHand.changePct === null) {
+    el.textContent = "";
+  } else {
+    el.textContent = fmtChange(cashFlowData.cashOnHand.changePct);
+    el.className = cashFlowData.cashOnHand.changePct >= 0 ? "text-emerald-400" : "text-red-400";
+  }
+}
+
+function setCashFlowTopline(inflow, outflow, net, changeInflow, changeOutflow, changeNet){
+  cashFlowData.topline = { 
+    inflow: typeof inflow === 'number' && !isNaN(inflow) && inflow >= 0 ? inflow : 0,
+    outflow: typeof outflow === 'number' && !isNaN(outflow) && outflow >= 0 ? outflow : 0,
+    net: typeof net === 'number' && !isNaN(net) ? net : 0,
+    changes: { 
+      inflow: typeof changeInflow === 'number' && !isNaN(changeInflow) ? changeInflow : null,
+      outflow: typeof changeOutflow === 'number' && !isNaN(changeOutflow) ? changeOutflow : null,
+      net: typeof changeNet === 'number' && !isNaN(changeNet) ? changeNet : null
+    } 
+  };
+  renderTopline();
+}
+
+function renderTopline(){
+  const d = cashFlowData.topline;
+  document.getElementById("cfInflow").textContent = fmtPeso(d.inflow);
+  document.getElementById("cfOutflow").textContent = fmtPeso(d.outflow);
+  document.getElementById("cfNet").textContent = fmtPeso(d.net);
 
   const setChange = (id, pct) => {
     const el = document.getElementById(id);
+    if (pct === null) { 
+      el.textContent = ""; 
+      return; 
+    }
     el.textContent = fmtChange(pct);
     el.className = pct >= 0 ? "text-emerald-400" : "text-red-400";
   };
-  setChange("cfCashOnHandChange", cashData.changes.cashOnHand);
-  setChange("cfInflowChange", cashData.changes.inflow);
-  setChange("cfOutflowChange", cashData.changes.outflow);
-  setChange("cfNetChange", cashData.changes.net);
+  setChange("cfInflowChange", d.changes.inflow);
+  setChange("cfOutflowChange", d.changes.outflow);
+  setChange("cfNetChange", d.changes.net);
+}
+
+function setCashFlowTrendData(months, inflowArr, outflowArr){
+  cashFlowData.trend = { 
+    months: Array.isArray(months) ? months : [],
+    inflow: Array.isArray(inflowArr) ? inflowArr.map(v => typeof v === 'number' && !isNaN(v) && v >= 0 ? v : 0) : [],
+    outflow: Array.isArray(outflowArr) ? outflowArr.map(v => typeof v === 'number' && !isNaN(v) && v >= 0 ? v : 0) : []
+  };
+  renderTrendChart();
+}
+
+function setCashFlowSummary(beginningBalance, inflow, outflow){
+  cashFlowData.summary = { 
+    beginningBalance: typeof beginningBalance === 'number' && !isNaN(beginningBalance) && beginningBalance >= 0 ? beginningBalance : 0,
+    inflow: typeof inflow === 'number' && !isNaN(inflow) && inflow >= 0 ? inflow : 0,
+    outflow: typeof outflow === 'number' && !isNaN(outflow) && outflow >= 0 ? outflow : 0
+  };
+  renderSummary();
 }
 
 function renderSummary() {
-  const { beginningBalance, inflow, outflow } = cashData.summary;
+  const { beginningBalance, inflow, outflow } = cashFlowData.summary;
   const net = inflow - outflow;
   const ending = beginningBalance + net;
 
@@ -295,8 +376,17 @@ function renderSummary() {
   document.getElementById("cfPosEnd").textContent = fmtPeso(ending);
 }
 
+function setActivityBreakdown(segments){
+  cashFlowData.activity = Array.isArray(segments) ? segments.map(s => ({
+    label: s.label || 'Unknown',
+    value: typeof s.value === 'number' && !isNaN(s.value) && s.value >= 0 ? s.value : 0,
+    color: s.color || '#4ca6ff'
+  })) : [];
+  renderActivityDonut();
+}
+
 function renderActivityDonut() {
-  const total = cashData.byActivity.reduce((s, a) => s + a.value, 0) || 1;
+  const total = cashFlowData.activity.reduce((s, a) => s + a.value, 0) || 1;
   const svg = document.getElementById("cfActivityDonut");
   svg.innerHTML = "";
   const r = 15.9155, cx = 21, cy = 21;
@@ -307,7 +397,7 @@ function renderActivityDonut() {
   bg.setAttribute("fill", "transparent"); bg.setAttribute("stroke", "#27477d"); bg.setAttribute("stroke-width", "6");
   svg.appendChild(bg);
 
-  cashData.byActivity.forEach(seg => {
+  cashFlowData.activity.forEach(seg => {
     const pct = (seg.value / total) * 100;
     const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     circle.setAttribute("cx", cx); circle.setAttribute("cy", cy); circle.setAttribute("r", r);
@@ -320,12 +410,14 @@ function renderActivityDonut() {
     offset += pct;
   });
 
-  document.getElementById("cfActivityLegend").innerHTML = cashData.byActivity.map(seg => `
-    <div class="flex items-center gap-2">
-      <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:${seg.color}"></span>
-      <span class="text-muted">${seg.label}</span>
-      <span class="ml-auto font-medium">${fmtPeso(seg.value)}</span>
-    </div>`).join("");
+  document.getElementById("cfActivityLegend").innerHTML = cashFlowData.activity.length > 0 ? 
+    cashFlowData.activity.map(seg => `
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full inline-block" style="background:${seg.color}"></span>
+        <span class="text-muted">${seg.label}</span>
+        <span class="ml-auto font-medium">${fmtPeso(seg.value)}</span>
+      </div>`).join("") : 
+    '<span class="text-muted text-xs">No activity data</span>';
 }
 
 const statementIcons = {
@@ -337,8 +429,24 @@ const statementIcons = {
   bolt: '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>',
 };
 
+function setCashFlowStatement(rows){
+  cashFlowData.statement = Array.isArray(rows) ? rows.map(r => ({
+    category: r.category || 'Unknown',
+    icon: r.icon || 'trend',
+    inflow: typeof r.inflow === 'number' && !isNaN(r.inflow) && r.inflow >= 0 ? r.inflow : 0,
+    outflow: typeof r.outflow === 'number' && !isNaN(r.outflow) && r.outflow >= 0 ? r.outflow : 0
+  })) : [];
+  renderStatement();
+}
+
 function renderStatement() {
-  const rows = cashData.statement;
+  const rows = cashFlowData.statement;
+  if (rows.length === 0) {
+    document.getElementById("cfStatementBody").innerHTML = 
+      '<tr><td colspan="4" class="text-center text-muted py-4">No statement data</td></tr>';
+    return;
+  }
+  
   const totalInflow = rows.reduce((s, r) => s + r.inflow, 0);
   const totalOutflow = rows.reduce((s, r) => s + r.outflow, 0);
 
@@ -358,34 +466,60 @@ function renderStatement() {
     </tr>`;
 }
 
+function setUpcomingOutflows(rows){
+  cashFlowData.upcoming = Array.isArray(rows) ? rows.map(r => ({
+    label: r.label || 'Unknown',
+    icon: r.icon || 'trend',
+    amount: typeof r.amount === 'number' && !isNaN(r.amount) && r.amount >= 0 ? r.amount : 0,
+    due: r.due || 'N/A'
+  })) : [];
+  renderUpcoming();
+}
+
 function renderUpcoming() {
-  document.getElementById("cfUpcomingList").innerHTML = cashData.upcomingOutflows.map(o => `
-    <li class="flex items-center gap-3">
-      <span class="w-8 h-8 rounded-lg bg-navy-700 flex items-center justify-center text-brand shrink-0">${statementIcons[o.icon] || ""}</span>
-      <div class="flex-1">
-        <p>${o.label}</p>
-      </div>
-      <div class="text-right">
-        <p class="font-medium">${fmtPeso(o.amount)}</p>
-        <p class="text-red-400 text-xs">${o.due}</p>
-      </div>
-    </li>`).join("");
+  const items = cashFlowData.upcoming;
+  document.getElementById("cfUpcomingList").innerHTML = items.length > 0 ?
+    items.map(o => `
+      <li class="flex items-center gap-3">
+        <span class="w-8 h-8 rounded-lg bg-navy-700 flex items-center justify-center text-brand shrink-0">${statementIcons[o.icon] || ""}</span>
+        <div class="flex-1">
+          <p>${o.label}</p>
+        </div>
+        <div class="text-right">
+          <p class="font-medium">${fmtPeso(o.amount)}</p>
+          <p class="text-red-400 text-xs">${o.due}</p>
+        </div>
+      </li>`).join("") :
+    '<li class="text-center text-muted text-sm py-4">No upcoming outflows</li>';
 }
 
 function renderTrendChart() {
   const svg = document.getElementById("cfTrendChart");
   if (!svg) return;
-  const range = parseInt(document.getElementById("cfRange").value);
-  const months = cashData.trend12.months.slice(-range);
-  const inflow = cashData.trend12.inflow.slice(-range);
-  const outflow = cashData.trend12.outflow.slice(-range);
+  const range = parseInt(document.getElementById("cfRange").value) || 6;
+  const months = cashFlowData.trend.months.slice(-range);
+  const inflow = cashFlowData.trend.inflow.slice(-range);
+  const outflow = cashFlowData.trend.outflow.slice(-range);
+  
+  if (months.length === 0) {
+    svg.innerHTML = '';
+    const text = document.createElementNS("http://www.w3.org/2000/svg","text");
+    text.setAttribute("x", "320");
+    text.setAttribute("y", "120");
+    text.setAttribute("fill", "#9bb0d1");
+    text.setAttribute("font-size", "14");
+    text.setAttribute("text-anchor", "middle");
+    text.textContent = "No trend data available";
+    svg.appendChild(text);
+    return;
+  }
+  
   const net = inflow.map((v, i) => v - outflow[i]);
 
   svg.innerHTML = "";
   const w = 640, h = 240, padX = 30, padY = 20;
-  const maxVal = Math.max(...inflow, ...outflow) * 1.15;
-  const minNet = Math.min(...net, 0);
-  const groupWidth = (w - padX * 2) / months.length;
+  const maxVal = Math.max(...inflow, ...outflow, 1) * 1.15;
+  const groupWidth = (w - padX * 2) / Math.max(months.length, 1);
   const barWidth = groupWidth * 0.28;
 
   const yFor = (v) => h - padY - (v / maxVal) * (h - padY * 2);
@@ -393,7 +527,6 @@ function renderTrendChart() {
   months.forEach((m, i) => {
     const groupX = padX + i * groupWidth + groupWidth / 2;
 
-    // inflow bar
     const bar1 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     bar1.setAttribute("x", groupX - barWidth - 2);
     bar1.setAttribute("y", yFor(inflow[i]));
@@ -403,7 +536,6 @@ function renderTrendChart() {
     bar1.setAttribute("rx", "2");
     svg.appendChild(bar1);
 
-    // outflow bar
     const bar2 = document.createElementNS("http://www.w3.org/2000/svg", "rect");
     bar2.setAttribute("x", groupX + 2);
     bar2.setAttribute("y", yFor(outflow[i]));
@@ -413,13 +545,13 @@ function renderTrendChart() {
     bar2.setAttribute("rx", "2");
     svg.appendChild(bar2);
 
-    // month label
     const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
     label.setAttribute("x", groupX); label.setAttribute("y", h - 2);
     label.setAttribute("fill", "#9bb0d1"); label.setAttribute("font-size", "10"); label.setAttribute("text-anchor", "middle");
     label.textContent = m;
     svg.appendChild(label);
   });
+
   const netMax = Math.max(...net.map(Math.abs), 1);
   const points = net.map((v, i) => {
     const x = padX + i * groupWidth + groupWidth / 2;
@@ -444,7 +576,7 @@ function renderTrendChart() {
 }
 
 function viewCashFlowReport() {
-  const { beginningBalance, inflow, outflow } = cashData.summary;
+  const { beginningBalance, inflow, outflow } = cashFlowData.summary;
   const net = inflow - outflow;
   const ending = beginningBalance + net;
 
@@ -461,13 +593,13 @@ function viewCashFlowReport() {
   lines.push("");
   lines.push("CASH FLOW STATEMENT");
   lines.push("Category,Inflow,Outflow,Net");
-  cashData.statement.forEach(r => {
+  cashFlowData.statement.forEach(r => {
     lines.push(`${r.category},${r.inflow},${r.outflow},${r.inflow - r.outflow}`);
   });
   lines.push("");
   lines.push("UPCOMING CASH OUTFLOW");
   lines.push("Item,Amount,Due");
-  cashData.upcomingOutflows.forEach(o => {
+  cashFlowData.upcoming.forEach(o => {
     lines.push(`${o.label},${o.amount},${o.due}`);
   });
 
@@ -483,13 +615,15 @@ function viewCashFlowReport() {
 }
 
 function renderCashFlowDashboard() {
-  renderTopCards();
+  renderCashOnHand();
+  renderTopline();
   renderSummary();
   renderActivityDonut();
   renderStatement();
   renderUpcoming();
   renderTrendChart();
 }
+
 document.addEventListener("DOMContentLoaded", renderCashFlowDashboard);
 </script>
 </body>

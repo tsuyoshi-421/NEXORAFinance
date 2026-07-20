@@ -6,7 +6,7 @@ tailwind.config = { theme: { extend: { colors: { navy: {900:'#0b1e3b',800:'#132b
 </script>
 <head>
 <meta charset="UTF-8">
-<title></title>
+<title>Dashboard main</title>
 <style>
 .main-wrapper { opacity: 0; animation: showPage .8s ease forwards; }
 @keyframes showPage { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -264,7 +264,7 @@ function renderCashFlowChart(){
   const rect = svg.getBoundingClientRect();
   const w = Math.round(Math.max(rect.width, 200));
   const h = Math.round(Math.max(rect.height, 90));
-  svg.setAttribute("viewBox", 0 0 ${w} ${h});
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
   svg.innerHTML = "";
 
   const padX = 6, padTop = 6, padBottom = 20;
@@ -274,7 +274,7 @@ function renderCashFlowChart(){
   const steps = 4;
   yAxisEl.innerHTML = Array.from({ length: steps + 1 }).map((_, i) => {
     const val = hasData ? Math.round(maxVal * (1 - i / steps)) : 0;
-    return <span>₱${(val / 1000).toFixed(0)}k</span>;
+    return `<span>₱${(val / 1000).toFixed(0)}k</span>`;
   }).join("");
 
   const base = document.createElementNS("http://www.w3.org/2000/svg","line");
@@ -354,7 +354,7 @@ function renderExpenses(){
     circle.setAttribute("fill", "transparent");
     circle.setAttribute("stroke", seg.color);
     circle.setAttribute("stroke-width", "6");
-    circle.setAttribute("stroke-dasharray", ${pct} ${100 - pct});
+    circle.setAttribute("stroke-dasharray", `${pct} ${100 - pct}`);
     circle.setAttribute("stroke-dashoffset", -offset);
     svg.appendChild(circle);
     offset += pct;
@@ -429,8 +429,8 @@ function renderMonthlyRevenue(){
   document.getElementById("revenueTotal").textContent = fmtPeso(d.total);
   const badge = document.getElementById("revenueChangeBadge");
   const up = d.changePct >= 0;
-  badge.textContent = ${up ? "↑" : "↓"} ${Math.abs(d.changePct)}%;
-  badge.className = text-xs font-semibold rounded-full px-2 py-0.5 ${up ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"};
+  badge.textContent = `${up ? "↑" : "↓"} ${Math.abs(d.changePct)}%`;
+  badge.className = `text-xs font-semibold rounded-full px-2 py-0.5 ${up ? "bg-emerald-500/20 text-emerald-400" : "bg-red-500/20 text-red-400"}`;
   document.getElementById("revenueChangeSub").textContent = d.changeSub;
   renderRevenueChart();
 }
@@ -444,7 +444,7 @@ function renderRevenueChart(){
   const rect = svg.getBoundingClientRect();
   const w = Math.round(Math.max(rect.width, 200));
   const h = Math.round(Math.max(rect.height, 120));
-  svg.setAttribute("viewBox", 0 0 ${w} ${h});
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
   svg.innerHTML = "";
 
   const padX = 4, padTop = 10, padBottom = 22;
@@ -453,7 +453,7 @@ function renderRevenueChart(){
   const steps = 3;
   yAxisEl.innerHTML = Array.from({ length: steps + 1 }).map((_, i) => {
     const val = hasData ? Math.round(maxVal * (1 - i / steps)) : 0;
-    return <span>₱${(val / 1000).toFixed(0)}k</span>;
+    return `<span>₱${(val / 1000).toFixed(0)}k</span>`;
   }).join("");
 
   const xFor = (i) => padX + (i * (w - padX * 2) / (months.length - 1));
@@ -466,7 +466,7 @@ function renderRevenueChart(){
   svg.appendChild(base);
 
   const color = hasData ? "#4ca6ff" : "#ffffff80";
-  const points = values.map((v,i) => ${xFor(i)},${yFor(v)}).join(" ");
+  const points = values.map((v,i) => `${xFor(i)},${yFor(v)}`).join(" ");
   const poly = document.createElementNS("http://www.w3.org/2000/svg","polyline");
   poly.setAttribute("points", points);
   poly.setAttribute("fill", "none");
@@ -529,7 +529,7 @@ function renderInvoiceTrendChart(){
   const rect = svg.getBoundingClientRect();
   const w = Math.round(Math.max(rect.width, 200));
   const h = Math.round(Math.max(rect.height, 120));
-  svg.setAttribute("viewBox", 0 0 ${w} ${h});
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
   svg.innerHTML = "";
 
   const padX = 4, padTop = 8, padBottom = 18;
@@ -541,7 +541,7 @@ function renderInvoiceTrendChart(){
   const steps = 3;
   yAxisEl.innerHTML = Array.from({ length: steps + 1 }).map((_, i) => {
     const val = hasData ? Math.round(maxVal * (1 - i / steps)) : 0;
-    return <span>₱${(val / 1000).toFixed(0)}k</span>;
+    return `<span>₱${(val / 1000).toFixed(0)}k</span>`;
   }).join("");
 
   const base = document.createElementNS("http://www.w3.org/2000/svg","line");
@@ -551,7 +551,7 @@ function renderInvoiceTrendChart(){
   svg.appendChild(base);
 
   const makeLine = (values, color) => {
-    const points = values.map((v,i) => ${xFor(i)},${yFor(v)}).join(" ");
+    const points = values.map((v,i) => `${xFor(i)},${yFor(v)}`).join(" ");
     const poly = document.createElementNS("http://www.w3.org/2000/svg","polyline");
     poly.setAttribute("points", points);
     poly.setAttribute("fill", "none");
