@@ -26,6 +26,10 @@ Route::get('invoice/{id}/print', [InvoiceController::class, 'print'])
 Route::put('/invoice/{invoice}', [InvoiceController::class, 'update'])
     ->name('invoice.update');    
 
+Route::put('/invoice/{invoice}/reject',
+    [InvoiceController::class, 'reject'])
+    ->name('invoice.reject');    
+
 Route::get('expensesdash', [ExpensesController::class, 'index'])->name('expensesdash');
 
 Route::get('salesdash', function () {

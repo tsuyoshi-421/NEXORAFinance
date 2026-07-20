@@ -17,12 +17,9 @@ class ExpensesController extends Controller
         $range = request()->get('range', '6months');
         $expenses = Procurement::select(
             'po_number',
-            'category',
             'item',
             'qty',
-            'uom',
             'amount',
-            'delivery_status',
             'status',
             'created_at'
         )->get();

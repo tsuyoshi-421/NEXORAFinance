@@ -12,8 +12,6 @@ class InvoiceController extends Controller
     // Show dashboard
     public function index()
     {
-        // All invoices for the table
-       // Test a linked invoice
 $invoices = Invoice::with('order')
     ->latest('issue_date')
     ->get();
@@ -22,14 +20,16 @@ $invoices = Invoice::with('order')
         $lastMonth = Carbon::now()->subMonth();
 
         // Current month's total invoice amount
-        $currentTotal = Invoice::whereYear('issue_date', $currentMonth->year)
-            ->whereMonth('issue_date', $currentMonth->month)
-            ->sum('invoice_amount');
+        $currentTotal = Invoice::where('status', '!=', 'Rejected')
+    ->whereYear('issue_date', $currentMonth->year)
+    ->whereMonth('issue_date', $currentMonth->month)
+    ->sum('invoice_amount');
 
         // Previous month's total invoice amount
-        $lastTotal = Invoice::whereYear('issue_date', $lastMonth->year)
-            ->whereMonth('issue_date', $lastMonth->month)
-            ->sum('invoice_amount');
+        $lastTotal = Invoice::where('status', '!=', 'Rejected')
+    ->whereYear('issue_date', $lastMonth->year)
+    ->whereMonth('issue_date', $lastMonth->month)
+    ->sum('invoice_amount');
 
         // Percentage change
         if ($lastTotal > 0) {
@@ -41,14 +41,16 @@ $invoices = Invoice::with('order')
             $color = $percent >= 0 ? 'text-emerald-400' : 'text-red-400';
 
                     // Current month's total paid amount
-            $currentPaid = Invoice::whereYear('issue_date', $currentMonth->year)
-                ->whereMonth('issue_date', $currentMonth->month)
-                ->sum('paid_amount');
+            $currentPaid = Invoice::where('status', 'Paid')
+    ->whereYear('issue_date', $currentMonth->year)
+    ->whereMonth('issue_date', $currentMonth->month)
+    ->sum('paid_amount');
 
             // Previous month's total paid amount
-            $lastPaid = Invoice::whereYear('issue_date', $lastMonth->year)
-                ->whereMonth('issue_date', $lastMonth->month)
-                ->sum('paid_amount');
+            $lastPaid = Invoice::where('status', 'Paid')
+    ->whereYear('issue_date', $lastMonth->year)
+    ->whereMonth('issue_date', $lastMonth->month)
+    ->sum('paid_amount');
 
             // Percentage change
             if ($lastPaid > 0) {
@@ -224,13 +226,16 @@ $invoices = Invoice::with('order')
     return redirect()->back()->with('success','Invoice updated.');
 }
 
-    // Delete an invoice
-    public function destroy($id)
-    {
-        Invoice::destroy($id);
+    // rejects an invoice
+    public function reject(Invoice $invoice)
+{
+    $invoice->status = 'Rejected';
+    $invoice->save();
 
-        return back()->with('success', 'Invoice deleted successfully.');
-    }
+    return response()->json([
+        'success' => true
+    ]);
+}
     public function print($id)
 {
     $invoice = Invoice::findOrFail($id);

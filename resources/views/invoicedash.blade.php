@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>Invoice Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -129,6 +130,7 @@
             <option value="Pending">Pending</option>
             <option value="Overdue">Overdue</option>
             <option value="Draft">Draft</option>
+            
           </select>
 
           <input id="dateRange" type="text" placeholder="Date Range"
@@ -239,7 +241,7 @@
 ========================== -->
 
 <div id="editInvoiceModal"
-     class="fixed inset-0 hidden flex items-center justify-center bg-black/60 z-50">
+     class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50">
 
     <div class="bg-navy-800 w-full max-w-xl rounded-xl shadow-2xl border border-navy-600">
 
@@ -481,10 +483,11 @@ let recentActivity = [
 let currentPage = 1;
 
 const statusStyles = {
-  Paid:    "bg-emerald-500/90 text-white",
-  Pending: "bg-amber-500/90 text-white",
-  Overdue: "bg-red-500/90 text-white",
-  Draft:   "bg-[#4A9EE8]/90 text-white",
+    Paid: "bg-emerald-500/90 text-white",
+    Pending: "bg-amber-500/90 text-white",
+    Overdue: "bg-red-500/90 text-white",
+    Draft: "bg-[#4A9EE8]/90 text-white",
+    Rejected: "bg-gray-500 text-white"
 };
 
 function fmtPeso(n){ return "₱" + Number(n).toLocaleString(); }
@@ -592,24 +595,26 @@ function renderInvoices() {
                     </button>
 
                     <button
-                        title="Delete"
-                        onclick="deleteInvoice('${inv.number}')"
-                        class="hover:text-red-400">
+                      title="Reject Invoice"
+                      onclick="rejectInvoice(${inv.id})"
+                      class="hover:text-red-400">
 
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                             class="w-4 h-4"
-                             viewBox="0 0 24 24"
-                             fill="none"
-                             stroke="currentColor"
-                             stroke-width="2">
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                          class="w-4 h-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2">
 
-                            <path d="M3 6h18"/>
-                            <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+                          <!-- Circle -->
+                          <circle cx="12" cy="12" r="9"></circle>
 
-                        </svg>
+                          <!-- Slash -->
+                          <path d="M8 16L16 8"></path>
 
-                    </button>
+                      </svg>
+
+                  </button>
 
                 </div>
             </td>
@@ -671,10 +676,13 @@ function openEditModal(id) {
     document.getElementById("editAmount").value = invoice.amount;
     document.getElementById("editStatus").value = invoice.status;
 
-    document.getElementById("editInvoiceModal")
-        .classList.remove("hidden");
+    const modal = document.getElementById("editInvoiceModal");
+
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
 }
 function closeEditModal() {
+
     const modal = document.getElementById("editInvoiceModal");
 
     modal.classList.remove("flex");
@@ -682,10 +690,37 @@ function closeEditModal() {
 }
 
 /* delete */
-function deleteInvoice(num) {
-  if (!confirm(`Delete invoice ${num}?`)) return;
-  invoices = invoices.filter(inv => inv.number !== num);
-  renderInvoices();
+function rejectInvoice(id) {
+
+    if (!confirm("Are you sure you want to reject this invoice?")) {
+        return;
+    }
+
+    fetch(`/invoice/${id}/reject`, {
+        method: "PUT",
+        headers: {
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+            "Accept": "application/json"
+        }
+    })
+    .then(async response => {
+
+        const text = await response.text();
+
+        console.log(text);
+
+        if (!response.ok) {
+            throw new Error(text);
+        }
+
+        location.reload();
+
+    })
+    .catch(error => {
+        console.error(error);
+        alert(error);
+    });
+
 }
 
 function exportCSV() {
@@ -719,22 +754,40 @@ function exportCSV() {
 
 
 function renderStats() {
-  const total = invoices.reduce((s,i) => s + i.invoice_amount, 0);
-  const paid = invoices.filter(i=>i.status==="Paid").reduce((s,i)=>s+i.invoice_amount,0);
-  const pending = invoices.filter(i=>i.status==="Pending").reduce((s,i)=>s+i.invoice_amount,0);
-  const overdue = invoices.filter(i=>i.status==="Overdue").reduce((s,i)=>s+i.invoice_amount,0);
 
-  document.getElementById("statTotal").textContent = fmtPeso(total);
-  document.getElementById("statPaid").textContent = fmtPeso(paid);
-  document.getElementById("statPending").textContent = fmtPeso(pending);
-  document.getElementById("statOverdue").textContent = fmtPeso(overdue);
+    // Ignore rejected invoices
+    const activeInvoices = invoices.filter(i => i.status !== "Rejected");
+
+    const total = activeInvoices.reduce(
+        (sum, i) => sum + i.invoice_amount,
+        0
+    );
+
+    const paid = activeInvoices
+        .filter(i => i.status === "Paid")
+        .reduce((sum, i) => sum + i.invoice_amount, 0);
+
+    const pending = activeInvoices
+        .filter(i => i.status === "Pending")
+        .reduce((sum, i) => sum + i.invoice_amount, 0);
+
+    const overdue = activeInvoices
+        .filter(i => i.status === "Overdue")
+        .reduce((sum, i) => sum + i.invoice_amount, 0);
+
+    document.getElementById("statTotal").textContent = fmtPeso(total);
+    document.getElementById("statPaid").textContent = fmtPeso(paid);
+    document.getElementById("statPending").textContent = fmtPeso(pending);
+    document.getElementById("statOverdue").textContent = fmtPeso(overdue);
 }
 
 function renderSummary() {
-  const total = invoices.reduce((s,i)=>s+i.invoice_amount,0) || 1;
-  const paid = invoices.filter(i=>i.status==="Paid").reduce((s,i)=>s+i.invoice_amount,0);
-  const pending = invoices.filter(i=>i.status==="Pending").reduce((s,i)=>s+i.invoice_amount,0);
-  const overdue = invoices.filter(i=>i.status==="Overdue").reduce((s,i)=>s+i.invoice_amount,0);
+  const activeInvoices = invoices.filter(i => i.status !== "Rejected");
+
+const total = activeInvoices.reduce((s, i) => s + i.invoice_amount, 0) || 1;
+const paid = activeInvoices.filter(i => i.status === "Paid").reduce((s, i) => s + i.invoice_amount, 0);
+const pending = activeInvoices.filter(i => i.status === "Pending").reduce((s, i) => s + i.invoice_amount, 0);
+const overdue = activeInvoices.filter(i => i.status === "Overdue").reduce((s, i) => s + i.invoice_amount, 0);
 
   const segments = [
     { label: "Paid", value: paid, color: "#2ecc71" },

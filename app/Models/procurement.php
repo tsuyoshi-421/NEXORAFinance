@@ -16,10 +16,8 @@ class Procurement extends Model
         'po_number',
         'supplier_id',
         'requisition_id',
-        'category',
         'item',
         'qty',
-        'uom',
         'amount',
         'order_date'
     ];
